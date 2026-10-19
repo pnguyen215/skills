@@ -1,98 +1,53 @@
 ---
-description: Senior-level README.md generator/updater for Go projects with mandatory collapsible (expand/collapse) section structure.
+name: readme-generator
+description: 'Creating standardized, comprehensive README.md files for repositories. Trigger: "write README", "generate project docs", "open source readme".'
 ---
 
-# Role
+# README Generator
 
-You are a Senior Developer Experience (DevEx) Technical Writer specializing in Open Source Go projects. You write with academic rigor, depth, and precision — never superficial, never scattered, never a flat top-down wall of text.
+## Purpose
 
-# Context
+Provides the first impression and onboarding guide for a repository.
 
-- **PROJECT_NAME**: {{project_name}}
-- **PROJECT_URL**: {{project_url}}
-- **MODULE_PATH**: {{module_path}}
-- **TARGET_AUDIENCE**: senior / advanced Go engineers
-- **EXISTING_README**: {{existing_readme_content_or_"none"}}
+## When to Use / When NOT to Use
 
-# Objective
+- **Use**: New repos, open-source projects, internal tools.
+- **NOT**: Deep architectural decisions (use ADRs).
 
-1. If `EXISTING_README` is `"none"`, **create** a new `README.md` from scratch by analyzing the source code at `PROJECT_URL`.
-2. If `EXISTING_README` already has content, **update/refactor** it — preserve and consolidate ALL existing information (do not drop any fact, example, config, or section), reorganize it into the structure below, and fill any gaps using the source code.
-3. The final output must be production-ready, strictly structured, scannable, and never written as an unorganized top-down narrative.
+## Prerequisites & Assumptions
 
-# Mandatory Formatting Rule
+- Project metadata. Installation steps.
 
-Every section — including all code block sections — **must** be wrapped in a native GitHub Markdown collapsible block:
+## Step-by-Step Workflow
 
-```html
-<details>
-  <summary><strong>Section Title</strong></summary>
+1. Add badges (build status, coverage, version).
+2. Write quickstart/install guide (< 5 mins).
+3. Document API/usage with code snippets.
+4. Add contributing guidelines and license.
 
-  content or code block goes here
-</details>
-```
+## Enterprise Rules & Standards
 
-Rules:
+- **MUST**: Include Quickstart that works out of the box.
+- **MUST**: List prerequisites (OS, language version, DB).
+- **SHOULD**: Add architecture diagram (Mermaid).
+- **MUST NOT**: Assume prior internal company knowledge.
 
-- Nest collapsibles where appropriate (e.g., each Usage Example gets its own nested `<details>` inside the parent "Usage Examples" `<details>`).
-- The top-level H1 title and one-line tagline stay **outside** any collapsible — this is the only exception.
-- Badges and the Table of Contents also stay **outside** collapsibles (must be visible immediately on page load).
-- Every code block, without exception, must live inside its own `<details>` wrapper — never place a bare fenced code block directly under a heading.
+## Examples
 
-# Structure Requirements
+- **Bad**: README with only `npm install`.
+- **Good**: Complete guide with env vars, examples, and troubleshooting.
 
-1. **Header Block** (not collapsed)
-   - Project name as H1
-   - One-line value proposition
-   - Badges: Go version, License, Go Reference, Build status (if detectable)
+## Checklist
 
-2. **Table of Contents** (not collapsed)
-   - Anchored links to every collapsible section below
+- [ ] Badges added.
+- [ ] Quickstart works.
+- [ ] License included.
 
-3. `<details>` **Overview**
-   - Problem solved, design rationale
-   - Bulleted key features
-   - When to use vs. when not to use
+## Common Pitfalls
 
-4. `<details>` **Installation**
-   - Prerequisites
-   - Install command(s)
-   - Module/version requirements
+- Missing required environment variables.
+- Outdated CLI commands.
 
-5. `<details>` **Quick Start**
-   - Minimal runnable snippet (own nested `<details>` code block)
-   - Demonstrates primary value in under 15 lines
+## References
 
-6. `<details>` **Usage Examples**
-   - 3–5 scenarios
-   - Each scenario is its own nested `<details>` with a descriptive summary (e.g., "Example: Concurrent batch processing")
-   - Each contains a compilable, self-contained code block
-
-7. `<details>` **API / Configuration Reference**
-   - Markdown table of exported types, functions, environment variables, and config options
-
-8. `<details>` **Architecture Notes** (only if internals are non-trivial)
-   - Diagram-in-text or bullet explanation of internal flow/data path
-
-9. `<details>` **Testing & Benchmarks** (only if present in repo)
-   - How to run tests
-   - Mocking strategy
-   - Benchmark results, if available
-
-10. `<details>` **Contributing**
-    - Link to CONTRIBUTING.md or inline contribution guidelines
-
-11. `<details>` **License**
-    - License type and link
-
-# Content Constraints
-
-- **Code Rules**: All code must compile, use `context.Context` where applicable, handle errors explicitly (never swallow with `_ =`), and include an inline comment showing expected output.
-- **Tone**: Formal, precise, instructional — academic but practical, written for senior engineers who want depth and rationale, not hand-holding.
-- **No duplication**: Merge overlapping content from the existing README instead of repeating it across multiple sections.
-- **No placeholders**: Every `{{...}}` variable must be resolved with actual repository data before producing the final document — never leave template variables in the output.
-- **Completeness guarantee**: When updating an existing README, perform a content audit first (list what already exists) before restructuring, to guarantee nothing is silently dropped.
-
-# Output
-
-Return the complete `README.md` content as a single, final Markdown document, wrapped in a 4-backtick fenced code block (since the content itself contains 3-backtick fences for code examples). Do not include any explanation before or after the document — output the file content only.
+- [Make a README](https://www.makeareadme.com/)
