@@ -225,7 +225,8 @@ resolve_source_dir() {
 
   # Remote / piped execution: no usable local clone. Use (or create) the
   # managed cache clone instead.
-  local managed="$(cache_dir)/repo"
+  local managed
+  managed="$(cache_dir)/repo"
   if [[ -d "${managed}/.git" ]]; then
     log_debug "Reusing existing managed clone: ${managed}"
   elif [[ -d "${managed}/skills" ]]; then
@@ -254,8 +255,11 @@ fetch_source_into() {
   fi
 
   log_info "git not found; downloading a tarball of ${AGENT_SKILLS_REPO}@${OPT_REF} instead."
-  local tmp_tar
-  tmp_tar="$(mktemp "${TMPDIR:-/tmp}/${AGENT_SKILLS_NAME}.XXXXXX.tar.gz")"
+  local tmp_dl tmp_tar
+  # BSD/macOS mktemp requires the XXXXXX at the very end, so create a temp
+  # directory and put the archive inside it instead of using a suffix.
+  tmp_dl="$(mktemp -d "${TMPDIR:-/tmp}/${AGENT_SKILLS_NAME}.XXXXXX")"
+  tmp_tar="${tmp_dl}/source.tar.gz"
   local url="https://codeload.github.com/${AGENT_SKILLS_REPO}/tar.gz/refs/heads/${OPT_REF}"
   if have_cmd curl; then
     curl -fsSL "${url}" -o "${tmp_tar}" || die "curl download failed: ${url}" "${EXIT_NETWORK}"
@@ -265,7 +269,7 @@ fetch_source_into() {
   mkdir -p "${dest}"
   tar -xzf "${tmp_tar}" -C "${dest}" --strip-components=1 \
     || die "Failed to extract archive ${tmp_tar}" "${EXIT_FS}"
-  rm -f "${tmp_tar}"
+  rm -rf "${tmp_dl}"
 }
 
 # Record which absolute source directory this install run used, so a later
@@ -453,16 +457,20 @@ unlink_skill() {
 
 # ---- Confirmation -----------------------------------------------------------
 confirm() {
-  local prompt="$1"
+  local prompt="$1" reply=""
   if [[ "${OPT_YES}" == "1" ]]; then
     return 0
   fi
-  if [[ ! -t 0 ]]; then
-    # Non-interactive shell (e.g. piped) without --yes: refuse to guess.
+  if [[ -t 0 ]]; then
+    read -r -p "${prompt} [y/N] " reply
+  elif ( : < /dev/tty ) 2>/dev/null; then
+    # stdin is a pipe (curl | bash) but a terminal exists: ask on the terminal.
+    printf '%s [y/N] ' "${prompt}" >&2
+    read -r reply < /dev/tty || reply=""
+  else
+    # Truly non-interactive (CI, cron): refuse to guess.
     die "Refusing to proceed without --yes in a non-interactive shell. Re-run with --yes." "${EXIT_USAGE}"
   fi
-  local reply
-  read -r -p "${prompt} [y/N] " reply
   case "${reply}" in
     [yY]|[yY][eE][sS]) return 0 ;;
     *) return 1 ;;
@@ -508,7 +516,7 @@ parse_common_args() {
       -y|--yes) OPT_YES="1"; shift ;;
       -v|--verbose) OPT_VERBOSE="1"; shift ;;
       -h|--help) REMAINING_ARGS=("--help"); return 0 ;;
-      --) shift; break ;;
+      --) shift; REMAINING_ARGS+=("$@"); break ;;
       *)
         REMAINING_ARGS+=("$1")
         shift
