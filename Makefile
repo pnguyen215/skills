@@ -62,7 +62,7 @@ new-skill: ## Scaffold a new skill (Usage: make new-skill NAME=skill-slug)
 	@echo "Created skills/$(NAME)/SKILL.md - please fill in the details."
 
 test: ## Run the installer test checklist's scripted checks (syntax + dry-run smoke test)
-	@bash -n install.sh && bash -n uninstall.sh && bash -n upgrade.sh && bash -n scripts/lib.sh
+	@bash -n install.sh && bash -n uninstall.sh && bash -n upgrade.sh && bash -n scripts/lib.sh && bash -n sync_claude.sh && bash -n sync_opencode.sh
 	@echo "Shell syntax OK."
 	@HOME=$$(mktemp -d) ./install.sh --dry-run --yes --tool all --scope personal
 	@echo "Dry-run smoke test OK."
