@@ -1,20 +1,15 @@
-# Navigate to your repository
-cd /path/to/skills
+#!/usr/bin/env bash
+# Maintainer-only helper: create a branch, commit everything and push it.
+# Usage: docs/maintainer-release-commands.sh [branch] ["commit message"]
+set -euo pipefail
 
-# Create a new branch following Conventional Commits
-git checkout -b chore/standardize-skills-repo
+BRANCH="${1:-chore/standardize-skills-repo}"
+MESSAGE="${2:-chore: standardize and modernize enterprise skills repository}"
 
-# Add all generated files
+# Run from the repository root no matter where the script is invoked from.
+cd "$(git rev-parse --show-toplevel)"
+
+git checkout -b "${BRANCH}"
 git add .
-
-# Commit with a detailed message
-git commit -m "chore: standardize and modernize enterprise skills repository
-
-- Consolidate legacy Go skills into cross-language categories
-- Add 21 new skills (Security, CI/CD, Observability, API Design, etc.)
-- Enforce strict SKILL.md template with enterprise rules
-- Add Makefile for validation, linting, and scaffolding
-- Align with SOLID, 12-Factor, OWASP, and SRE principles"
-
-# Push to remote
-git push origin chore/standardize-skills-repo
+git commit -m "${MESSAGE}"
+git push -u origin "${BRANCH}"
