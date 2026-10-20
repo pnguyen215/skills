@@ -40,7 +40,42 @@
 # =============================================================================
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+# -----------------------------------------------------------------------------
+# Locate scripts/lib.sh.
+#
+# * Normal run (./install.sh, bash install.sh): BASH_SOURCE[0] is this file, so
+#   lib.sh sits next to it in scripts/.
+# * Remote run (curl ... | bash -s -- ...): bash reads the script from STDIN.
+#   There is no file on disk, BASH_SOURCE is empty (referencing [0] under
+#   `set -u` is an "unbound variable" error) and scripts/lib.sh does not exist
+#   locally. In that case we download ONLY lib.sh into a throw-away temp dir.
+#   The skill content itself is later cloned into a persistent cache directory
+#   by resolve_source_dir(), so nothing installed ever points at the temp dir.
+#
+# Optional overrides: AGENT_SKILLS_REPO, AGENT_SKILLS_REF, AGENT_SKILLS_LIB_URL
+# -----------------------------------------------------------------------------
+_self="${BASH_SOURCE[0]:-}"
+if [[ -n "${_self}" && -f "${_self}" && -f "$(dirname "${_self}")/scripts/lib.sh" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${_self}")" >/dev/null 2>&1 && pwd)"
+else
+  SCRIPT_DIR="$(mktemp -d "${TMPDIR:-/tmp}/pnguyen215-skills.XXXXXX")" \
+    || { echo "[error] cannot create a temporary directory" >&2; exit 4; }
+  trap 'rm -rf "${SCRIPT_DIR}"' EXIT
+  mkdir -p "${SCRIPT_DIR}/scripts"
+  _lib_url="${AGENT_SKILLS_LIB_URL:-https://raw.githubusercontent.com/${AGENT_SKILLS_REPO:-pnguyen215/skills}/${AGENT_SKILLS_REF:-master}/scripts/lib.sh}"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "${_lib_url}" -o "${SCRIPT_DIR}/scripts/lib.sh" \
+      || { echo "[error] failed to download ${_lib_url}" >&2; exit 5; }
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q "${_lib_url}" -O "${SCRIPT_DIR}/scripts/lib.sh" \
+      || { echo "[error] failed to download ${_lib_url}" >&2; exit 5; }
+  else
+    echo "[error] need curl or wget to run this script from a pipe" >&2
+    exit 3
+  fi
+fi
+unset _self _lib_url
+
 REMAINING_ARGS=()
 # shellcheck source=scripts/lib.sh
 source "${SCRIPT_DIR}/scripts/lib.sh"
@@ -73,11 +108,22 @@ refresh_source() {
     log_info "Updating git clone at ${source_dir} ..."
     local before after
     before="$(git -C "${source_dir}" rev-parse HEAD 2>/dev/null || echo unknown)"
-    git -C "${source_dir}" fetch --quiet origin "${OPT_REF}" \
-      || die "git fetch failed for ${AGENT_SKILLS_REPO}@${OPT_REF}" "${EXIT_NETWORK}"
-    git -C "${source_dir}" checkout --quiet "${OPT_REF}" 2>/dev/null || true
-    git -C "${source_dir}" merge --ff-only --quiet "origin/${OPT_REF}" \
-      || die "git fast-forward failed; resolve manually in ${source_dir}" "${EXIT_GENERIC}"
+    # Explicit refspec: a plain `git fetch origin <ref>` does not create
+    # origin/<ref> in a shallow single-branch clone, so the merge below would fail.
+    if git -C "${source_dir}" fetch --quiet --depth 1 origin \
+         "+refs/heads/${OPT_REF}:refs/remotes/origin/${OPT_REF}" 2>/dev/null; then
+      git -C "${source_dir}" checkout --quiet "${OPT_REF}" 2>/dev/null \
+        || git -C "${source_dir}" checkout --quiet -b "${OPT_REF}" "origin/${OPT_REF}" \
+        || die "git checkout of '${OPT_REF}' failed in ${source_dir}" "${EXIT_GENERIC}"
+      git -C "${source_dir}" merge --ff-only --quiet "origin/${OPT_REF}" \
+        || die "git fast-forward failed; resolve manually in ${source_dir}" "${EXIT_GENERIC}"
+    elif git -C "${source_dir}" fetch --quiet --depth 1 origin \
+         "+refs/tags/${OPT_REF}:refs/tags/${OPT_REF}" 2>/dev/null; then
+      git -C "${source_dir}" checkout --quiet --detach "refs/tags/${OPT_REF}" \
+        || die "git checkout of tag '${OPT_REF}' failed in ${source_dir}" "${EXIT_GENERIC}"
+    else
+      die "git fetch failed for ${AGENT_SKILLS_REPO}@${OPT_REF}" "${EXIT_NETWORK}"
+    fi
     after="$(git -C "${source_dir}" rev-parse HEAD 2>/dev/null || echo unknown)"
     if [[ "${before}" == "${after}" ]]; then
       log_info "Already up to date (${after})."
