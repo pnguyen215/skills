@@ -1,9 +1,8 @@
-# Enterprise Engineering Skills Repository
+# 🧠 pnguyen215/skills
 
-A standardized, enterprise-grade collection of [Agent Skills](https://agentskills.io)
-(`SKILL.md`) designed to enforce large-enterprise engineering standards across Go, Java, Python,
-and cross-cutting concerns like API Design, Security, CI/CD, and Observability — packaged as an
-installable distribution for **Claude Code** and **OpenCode**.
+A curated collection of [Agent Skills](https://agentskills.io) — enterprise engineering
+standards (API design, CI/CD, security, testing, observability, Go/Java/Python conventions, and
+more) — packaged as installable `SKILL.md` files for [Claude Code](https://github.com/anthropics/claude-code) and [OpenCode](https://github.com/anomalyco/opencode).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/install.sh \
