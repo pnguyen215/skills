@@ -1,6 +1,8 @@
 ---
 name: design-system
 description: 'Building consistent UI/UX component libraries and design tokens. Trigger: "create design system", "standardize UI", "design tokens".'
+metadata:
+  category: design
 ---
 
 # Design System

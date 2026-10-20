@@ -1,6 +1,8 @@
 ---
 name: ci-cd-quality-gates
 description: 'Enforce automated quality gates (SonarQube, coverage, linting). Trigger: "setup quality gate", "block PR on lint failure", "enforce coverage".'
+metadata:
+  category: ci-cd
 ---
 
 # Quality Gates

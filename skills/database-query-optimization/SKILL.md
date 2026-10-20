@@ -1,6 +1,8 @@
 ---
 name: database-query-optimization
 description: 'Indexing strategies, EXPLAIN plan analysis, N+1 prevention. Trigger: "optimize SQL query", "fix N+1 queries", "slow query log".'
+metadata:
+  category: database
 ---
 
 # Query Optimization

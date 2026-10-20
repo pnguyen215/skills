@@ -1,6 +1,8 @@
 ---
 name: ci-cd-release-management
 description: 'Automate semantic versioning, changelogs, artifact publishing. Trigger: "automate release", "semantic release setup", "publish package".'
+metadata:
+  category: ci-cd
 ---
 
 # Release Management

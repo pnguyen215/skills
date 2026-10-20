@@ -1,6 +1,8 @@
 ---
 name: git-workflow-branching
 description: 'Git branching models (Trunk-Based, GitFlow) and repository protection rules. Trigger: "setup branching strategy", "configure branch protection", "GitFlow".'
+metadata:
+  category: git-workflow
 ---
 
 # Branching Strategy

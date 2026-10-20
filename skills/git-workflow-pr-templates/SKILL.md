@@ -1,6 +1,8 @@
 ---
 name: git-workflow-pr-templates
 description: 'Designing effective Pull Request templates to ensure review readiness. Trigger: "create PR template", "standardize pull requests", "PR description".'
+metadata:
+  category: git-workflow
 ---
 
 # PR Templates

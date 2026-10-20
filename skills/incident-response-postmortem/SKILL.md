@@ -1,6 +1,8 @@
 ---
 name: incident-response-postmortem
 description: 'Blameless postmortem frameworks, root-cause analysis (5 Whys), and action item tracking. Trigger: "write incident postmortem", "RCA template", "incident review".'
+metadata:
+  category: incident-response
 ---
 
 # Postmortem & RCA

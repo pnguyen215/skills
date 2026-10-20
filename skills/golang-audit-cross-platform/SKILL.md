@@ -1,6 +1,8 @@
 ---
 name: golang-audit-cross-platform
 description: 'Audits Go code for cross-platform compatibility (Linux/Windows/macOS), concurrency safety, and resource efficiency. Trigger: "cross-platform Go audit", "fix Windows path issues Go", "go:build tags", "data race audit".'
+metadata:
+  category: language-specific
 ---
 
 # Go Audit: Cross-Platform & Concurrency Safety

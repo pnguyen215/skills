@@ -1,6 +1,8 @@
 ---
 name: database-postgres-migrations
 description: 'Standardizes PostgreSQL migration scripts (Flyway/Liquibase) with strict schema design, partitioning, and mandatory documentation. Trigger: "write postgres migration", "create sql script", "design postgres schema", "flyway migration", "add COMMENT ON".'
+metadata:
+  category: database
 ---
 
 # PostgreSQL Migration & Schema Standards

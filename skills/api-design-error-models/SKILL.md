@@ -1,6 +1,8 @@
 ---
 name: api-design-error-models
 description: 'Standardizes API error responses, HTTP/gRPC status codes, and RFC 7807. Trigger: "design error model", "standardize API errors", "fix API status codes".'
+metadata:
+  category: api-design
 ---
 
 # API Error Models
