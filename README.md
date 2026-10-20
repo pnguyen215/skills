@@ -11,16 +11,18 @@ curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/install.sh
 
 ## ✨ Features
 
-- **44 skills**, each a self-contained `skills/<slug>/SKILL.md` following the
+- **47 skills**, each a self-contained `skills/<slug>/SKILL.md` following the
   [Agent Skills](https://agentskills.io) open standard.
 - **One repository, two tools.** The same content installs into Claude Code and/or OpenCode,
   for your user account (personal) and/or a single project — without duplicating files on disk
   (skills are symlinked from a single source by default).
 - **Safe by construction**: no `sudo`, nothing written outside your home directory or a project
   folder you point at, automatic backup of anything it would overwrite, and a removal-safe
-  manifest so `uninstall.sh` only ever touches what `install.sh` installed.
+  manifest so `uninstall.sh` only ever touches what this tool installed.
 - **Idempotent and scriptable**: re-running `install.sh` is a no-op when nothing changed;
   `--dry-run`, `--yes`, and `--skills <a,b,c>` make it safe to call from other automation.
+- **Always able to catch up**: `upgrade.sh` refreshes what you installed _and_ adds new skills;
+  `sync_claude.sh` / `sync_opencode.sh` make one tool mirror the repository exactly.
 - **Cross-platform**: Linux, macOS, and Windows (via Git Bash, MSYS2, or WSL).
 
 ## 🧩 Supported Tools & Platforms
@@ -80,10 +82,13 @@ Other top-level files:
 
 ```text
 templates/SKILL.template.md   # scaffold used by `make new-skill`
-scripts/lib.sh                # shared library used by install.sh / uninstall.sh / upgrade.sh
-docs/review-report.md         # structural audit of this repository and the fixes applied
-docs/test-checklist.md        # manual QA matrix for the installer scripts
-install.sh / uninstall.sh / upgrade.sh
+scripts/lib.sh                # shared library used by every installer script
+install.sh                    # install skills (Claude Code / OpenCode)
+upgrade.sh                    # pull latest content, refresh installed skills, add new ones
+uninstall.sh                  # remove what this tool installed (--purge wipes its state too)
+sync_claude.sh                # make Claude Code's skills mirror the repository exactly
+sync_opencode.sh              # make OpenCode's skills mirror the repository exactly
+docs/maintainer-release-commands.sh   # maintainer helper for release commands
 Makefile                      # make validate / make new-skill / make lint / make test
 CONTRIBUTING.md · CHANGELOG.md · LICENSE
 ```
@@ -197,7 +202,7 @@ OpenCode's own native paths directly (see [Supported Tools & Platforms](#-suppor
 # Remove just one skill from Claude Code's personal skills
 ./uninstall.sh --tool claude --scope personal --skills golang-audit-security
 
-# Also wipe this tool's own bookkeeping (manifest, backups, cached clone)
+# Also wipe this tool's own bookkeeping (manifest, backups) and its cached clone
 ./uninstall.sh --tool all --scope all --purge --yes
 ```
 
@@ -208,14 +213,30 @@ curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/uninstall.
   | bash -s -- --tool all --scope all --yes
 ```
 
-`uninstall.sh` only ever removes entries recorded in its own manifest — a skill folder you
-created yourself with a matching name is never touched.
+What gets removed:
+
+1. Every entry recorded in the manifest (matching your `--tool` / `--scope` / `--skills`).
+2. Leftover **symlinks that point into this tool's own clone** but have lost their manifest row
+   (for example when the same skill was installed into two projects). Skip this step with
+   `--no-sweep`.
+
+A skill folder you created yourself with a matching name is never touched. `--purge` also
+deletes the manifest, backups and the cached clone, so the next `install.sh` starts from a
+fresh download.
+
+> **Tip:** OpenCode also reads `~/.claude/skills/`. If you uninstall only one tool, the other
+> tool's skills can still show up in OpenCode. Use `--tool all` for a complete removal.
+>
+> Restart your Claude Code / OpenCode session afterwards so it reloads the skills directory.
 
 ## 🔄 Upgrade
 
 ```bash
-# Pull the latest content and re-link everything this tool manages
+# Pull the latest content, refresh installed skills, and install skills that are new upstream
 ./upgrade.sh --yes
+
+# Only refresh what is already installed (do not add new skills)
+./upgrade.sh --no-new --yes
 
 # Upgrade only what's installed for OpenCode's project scope
 ./upgrade.sh --tool opencode --scope project --yes
@@ -232,13 +253,47 @@ curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/upgrade.sh
 ```
 
 `upgrade.sh` prints what changed (commit range + changed files via `git`, or an added/removed
-skill list when falling back to a tarball) before re-linking. It only re-links skills you
-already installed — run `install.sh` again (optionally with `--skills`) to pick up brand-new
-skills added upstream.
+skill list when falling back to a tarball), then:
+
+- re-links/re-copies every skill you installed, **keeping its install mode** (symlink or copy);
+- installs skills added upstream since your last install, into the tool/scope directories you
+  already use (never over a folder this tool did not create; disable with `--no-new`);
+- reports skills that were **removed upstream** but does not delete them — use `uninstall.sh`
+  or `sync_*.sh` for that.
+
+The managed clone is a disposable cache: if it cannot be fast-forwarded (for example after an
+upstream history rewrite) it is reset or re-downloaded in place, so existing symlinks stay valid.
+Restart your Claude Code / OpenCode session afterwards.
+
+## 🔁 Sync (mirror the repository exactly)
+
+`sync_claude.sh` and `sync_opencode.sh` make one tool's skills directory match the latest
+repository content. They work even if you never ran `install.sh`, and are safe to run repeatedly.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/sync_claude.sh \
+  | bash -s -- --yes
+
+curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/sync_opencode.sh \
+  | bash -s -- --yes
+```
+
+Each run:
+
+1. pulls the latest content;
+2. installs every skill that is new upstream;
+3. refreshes installed skills (symlink/copy mode preserved);
+4. removes skills deleted upstream and dangling links into the managed clone
+   (disable with `--no-prune`).
+
+Folders this tool did not create are skipped with a warning. `--tool` is fixed by the script
+name; all other [common options](#%EF%B8%8F-options-reference) work (e.g. `--scope project`,
+`--skills a,b`, `--dry-run`). Restart the tool's session afterwards.
 
 ## ⚙️ Options Reference
 
-All three scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`) accept the same core flags:
+All scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`, `sync_claude.sh`, `sync_opencode.sh`)
+accept the same core flags:
 
 | Flag                   | Values                           | Default           | Meaning                                                |
 | ---------------------- | -------------------------------- | ----------------- | ------------------------------------------------------ |
@@ -253,8 +308,16 @@ All three scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`) accept the same c
 | `-v`, `--verbose`      | flag                             | off               | Print debug-level log lines.                           |
 | `-h`, `--help`         | flag                             | —                 | Print usage and exit.                                  |
 
-`uninstall.sh` additionally accepts `--purge` to also delete the tool's own state directory
-(manifest, backups, cached clone) after removing the skills themselves.
+Script-specific flags:
+
+| Script                                | Flag         | Meaning                                                                      |
+| ------------------------------------- | ------------ | ---------------------------------------------------------------------------- |
+| `uninstall.sh`                        | `--purge`    | Also delete the manifest, backups and the cached clone after uninstalling.   |
+| `uninstall.sh`                        | `--no-sweep` | Only remove manifest-tracked entries; skip the leftover-symlink sweep.       |
+| `upgrade.sh`                          | `--no-new`   | Do not install skills that were added upstream; only refresh installed ones. |
+| `sync_claude.sh` / `sync_opencode.sh` | `--no-prune` | Do not remove skills that were deleted upstream.                             |
+
+`--tool` is fixed to `claude` / `opencode` for the `sync_*` scripts.
 
 **`--mode` trade-off:** `symlink` means zero duplication — `upgrade.sh` instantly reflects new
 content because the link always points at the freshly pulled source. It needs filesystem
@@ -279,8 +342,10 @@ installed copy won't propagate back (and will be overwritten on the next upgrade
 - **No `sudo`, ever.** Every path written to lives under `$HOME` (or an explicit
   `--project-dir` you chose). Nothing requests elevated privileges, on any platform.
 - **Only touches what it manages.** Every install is recorded in a manifest
-  (`~/.local/state/pnguyen215-skills/manifest.tsv` by default). `uninstall.sh`/`upgrade.sh` only
-  act on rows found there.
+  (`~/.local/state/pnguyen215-skills/manifest.tsv` by default). `upgrade.sh` and `uninstall.sh`
+  act on rows found there; the only extra thing `uninstall.sh` and `sync_*.sh` remove is a
+  symlink that points into this tool's own cached clone (always created by this tool). A
+  folder or symlink that points anywhere else is never touched.
 - **The manifest never lives inside a skills directory.** Claude Code releases before v2.1.280
   watched for a file literally named `manifest.json` inside `~/.claude/skills/` and used its
   presence to decide which skill folders to move to `.trash/`. To stay safe on every Claude Code
@@ -289,6 +354,9 @@ installed copy won't propagate back (and will be overwritten on the next upgrade
 - **Backs up, never silently overwrites.** Anything already at a target path that isn't already
   tracked by the manifest is moved to
   `~/.local/state/pnguyen215-skills/backups/<timestamp>/<tool>-<scope>/<skill>/` first.
+- **The cached clone is disposable.** It lives in `~/.local/share/pnguyen215-skills/repo`, is
+  reset to upstream on every run, and is re-downloaded in place if that fails. A full clone you
+  manage yourself is only ever fast-forwarded, never reset or deleted.
 - **Idempotent.** Running `install.sh`/`upgrade.sh` twice with the same options is a harmless
   no-op the second time.
 - **`set -euo pipefail`, quoted variables, validated inputs** throughout.
@@ -300,28 +368,30 @@ installed copy won't propagate back (and will be overwritten on the next upgrade
   skills are listed; invoke one directly with `/<skill-slug>`.
 - **OpenCode**: ask something that matches a skill's description, or check the `skill` tool's
   listing directly if you have shell access.
+- **After `install.sh`, `upgrade.sh`, `sync_*.sh` or `uninstall.sh`, restart the session.** Both
+  tools read their skills directory when a session starts, so changes only show up in a new one.
 
 ## 📚 Available Skills
 
-Grouped by `metadata.category` (recorded in frontmatter, not by folder nesting — see
-`docs/review-report.md` for why the on-disk layout is flat).
+Grouped by `metadata.category` (recorded in frontmatter, not by folder nesting — the on-disk
+layout is flat, one folder per skill).
 
-| Category            | Skills                                                                                                            |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `api-design`        | `api-design-error-models`, `api-design-rest-grpc-conventions`, `api-design-versioning`                            |
-| `ci-cd`             | `ci-cd-pipelines`, `ci-cd-quality-gates`, `ci-cd-release-management`                                              |
-| `code-quality`      | `code-quality-code-review`, `code-quality-refactoring`, `code-quality-static-analysis`                            |
-| `database`          | `database-migrations`, `database-postgres-migrations`, `database-query-optimization`, `database-schema-design`    |
-| `design`            | `design-pattern`, `design-system`                                                                                 |
-| `documentation`     | `documentation-api-documentation`, `documentation-readme-generator`, `documentation-technical-writing`            |
-| `ecosystem-replify` | `replify-go-api-design`, `replify-go-encapsulation`, `replify-slogger`, `replify-strchain`, `replify-strutil`     |
-| `git-workflow`      | `git-workflow-branching`, `git-workflow-commit-conventions`, `git-workflow-pr-templates`                          |
-| `incident-response` | `incident-response-postmortem`                                                                                    |
-| `language-specific` | `golang`, `golang-audit-cross-platform`, `golang-audit-godoc-coverage`, `golang-audit-security`, `java`, `python` |
-| `observability`     | `observability-logging`, `observability-metrics`, `observability-tracing`                                         |
-| `performance`       | `performance-benchmarking`, `performance-profiling`                                                               |
-| `security`          | `security-dependency-scanning`, `security-secrets-management`, `security-secure-coding`                           |
-| `testing`           | `testing-test-coverage`, `testing-test-strategy`, `testing-unit-testing`                                          |
+| Category            | Skills                                                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api-design`        | `api-design-error-models`, `api-design-rest-grpc-conventions`, `api-design-versioning`                                                                              |
+| `ci-cd`             | `ci-cd-pipelines`, `ci-cd-quality-gates`, `ci-cd-release-management`                                                                                                |
+| `code-quality`      | `code-quality-code-review`, `code-quality-refactoring`, `code-quality-static-analysis`                                                                              |
+| `database`          | `database-migrations`, `database-postgres-migrations`, `database-query-optimization`, `database-schema-design`                                                      |
+| `design`            | `design-pattern`, `design-system`                                                                                                                                   |
+| `documentation`     | `documentation-api-documentation`, `documentation-collapsible-readme`, `documentation-readme-generator`, `documentation-technical-writing`                          |
+| `ecosystem-replify` | `replify-go-api-design`, `replify-go-encapsulation`, `replify-slogger`, `replify-strchain`, `replify-strutil`                                                       |
+| `git-workflow`      | `git-workflow-branching`, `git-workflow-commit-conventions`, `git-workflow-pr-templates`                                                                            |
+| `incident-response` | `incident-response-postmortem`                                                                                                                                      |
+| `language-specific` | `golang`, `golang-audit-cross-platform`, `golang-audit-godoc-coverage`, `golang-audit-security`, `golang-godoc-engineer`, `java`, `java-javadoc-engineer`, `python` |
+| `observability`     | `observability-logging`, `observability-metrics`, `observability-tracing`                                                                                           |
+| `performance`       | `performance-benchmarking`, `performance-profiling`                                                                                                                 |
+| `security`          | `security-dependency-scanning`, `security-secrets-management`, `security-secure-coding`                                                                             |
+| `testing`           | `testing-test-coverage`, `testing-test-strategy`, `testing-unit-testing`                                                                                            |
 
 ## 🛠️ Tooling
 
@@ -331,8 +401,7 @@ A `Makefile` keeps the repository healthy:
 - `make validate` — ensures every `skills/*/SKILL.md` is non-empty, has valid frontmatter, a
   `description`, and a `name` matching its folder.
 - `make new-skill NAME=<slug>` — scaffolds a new skill from `templates/SKILL.template.md`.
-- `make test` — syntax-checks `install.sh`/`uninstall.sh`/`upgrade.sh`/`scripts/lib.sh` and runs
-  a dry-run smoke test.
+- `make test` — syntax-checks the installer scripts and runs a dry-run smoke test.
 
 ## ❓ Troubleshooting & FAQ
 
@@ -347,15 +416,30 @@ You're running it from `cmd.exe`/PowerShell. Use Git Bash, MSYS2, or WSL — it'
 **I ran the one-liner and nothing shows up in Claude Code / OpenCode.**
 Confirm `--tool`/`--scope` were correct, then check the files exist (`ls ~/.claude/skills`,
 `ls ~/.config/opencode/skills`, or the `.claude/skills` / `.opencode/skills` equivalents inside
-your project). Some sessions need a restart to pick up a brand-new skills folder.
+your project). Both tools only read their skills directory when a session starts, so
+**restart the session** to pick up new or changed skills.
 
-**How do I update just one skill?** `./upgrade.sh --skills <slug> --yes`
+**My skills don't look up to date after an upgrade.**
+Restart the Claude Code / OpenCode session first. If something is still missing, run
+`./sync_claude.sh --yes` and/or `./sync_opencode.sh --yes` to mirror the repository exactly, and
+check with `ls -la ~/.claude/skills` (symlinks should point into
+`~/.local/share/pnguyen215-skills/repo/skills/`).
+
+**A skill was deleted upstream but is still installed.**
+`upgrade.sh` only reports it. Remove it with `./uninstall.sh --skills <slug> --yes`, or run
+`sync_claude.sh` / `sync_opencode.sh` (they prune it automatically).
+
+**A new skill was added upstream but I don't have it.**
+`./upgrade.sh --yes` installs new skills into the tool/scope directories you already use. If you
+passed `--no-new` or never installed that tool/scope, run `install.sh` or `sync_*.sh`.
+
+**I only want to update one skill.** `./upgrade.sh --skills <slug> --yes`
 
 **How do I start over completely?**
 `./uninstall.sh --tool all --scope all --purge --yes`, then re-run `install.sh`.
 
 **Can I point this at my own fork?**
-Set `AGENT_SKILLS_REPO=yourname/skills` before running any of the three scripts.
+Set `AGENT_SKILLS_REPO=yourname/skills` before running any of the scripts.
 
 **Does this touch my `CLAUDE.md` or OpenCode config files?**
 No — only the four skills directories above, plus this tool's own state directory.
