@@ -1,6 +1,8 @@
 ---
 name: database-schema-design
 description: 'Normalization, denormalization trade-offs, constraint enforcement. Trigger: "design database schema", "model entity relationships", "ERD".'
+metadata:
+  category: database
 ---
 
 # Schema Design

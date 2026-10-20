@@ -1,6 +1,8 @@
 ---
 name: git-workflow-commit-conventions
 description: 'Enforcing Conventional Commits and automated commit linting. Trigger: "setup commit linting", "Conventional Commits rules", "commit message format".'
+metadata:
+  category: git-workflow
 ---
 
 # Commit Conventions

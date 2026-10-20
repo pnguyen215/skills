@@ -1,6 +1,8 @@
 ---
 name: ci-cd-pipelines
 description: 'Design CI/CD pipelines with GitHub Actions/GitLab CI, matrix builds, caching. Trigger: "build CI pipeline", "setup GitHub Actions", "optimize CI".'
+metadata:
+  category: ci-cd
 ---
 
 # CI/CD Pipelines

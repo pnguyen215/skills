@@ -1,6 +1,8 @@
 ---
 name: api-design-rest-grpc-conventions
 description: 'Defines RESTful and gRPC endpoint naming, payload structures, and pagination. Trigger: "design REST API", "gRPC service conventions", "API pagination".'
+metadata:
+  category: api-design
 ---
 
 # REST & gRPC Conventions

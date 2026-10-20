@@ -1,6 +1,8 @@
 ---
 name: documentation-technical-writing
 description: 'Authoring ADRs, runbooks, RFCs, and inline code documentation. Trigger: "write ADR", "create runbook", "improve GoDoc", "technical spec".'
+metadata:
+  category: documentation
 ---
 
 # Technical Writing

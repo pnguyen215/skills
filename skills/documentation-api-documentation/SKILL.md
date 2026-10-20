@@ -1,6 +1,8 @@
 ---
 name: documentation-api-documentation
 description: 'Generating and maintaining OpenAPI/Swagger specs and gRPC Proto docs. Trigger: "generate OpenAPI", "document gRPC", "swagger UI".'
+metadata:
+  category: documentation
 ---
 
 # API Documentation

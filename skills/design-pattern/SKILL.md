@@ -1,6 +1,8 @@
 ---
 name: design-pattern
 description: 'Application of Gang of Four and enterprise integration patterns. Trigger: "apply design pattern", "refactor to strategy", "decouple components".'
+metadata:
+  category: design
 ---
 
 # Design Patterns

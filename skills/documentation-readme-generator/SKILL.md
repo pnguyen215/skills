@@ -1,6 +1,8 @@
 ---
 name: documentation-readme-generator
 description: 'Creating standardized, comprehensive README.md files for repositories. Trigger: "write README", "generate project docs", "open source readme".'
+metadata:
+  category: documentation
 ---
 
 # README Generator
