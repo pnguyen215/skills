@@ -3,6 +3,7 @@ name: replify-strutil
 description: 'Standardizes string manipulation, validation, and transformation using replify/pkg/strutil. Trigger: "string manipulation replify", "slugify string", "use strutil", "string validation".'
 metadata:
   category: ecosystem-replify
+  tags: "replify, golang, strings, validation, transformation"
 ---
 
 # replify/strutil: Comprehensive String Utilities

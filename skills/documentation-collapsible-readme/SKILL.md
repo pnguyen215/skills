@@ -3,6 +3,7 @@ name: documentation-collapsible-readme
 description: 'Refactor messy, overly long, or complex README.md files into a clean, collapsible (<details>/<summary>) structure for experienced engineers. Trigger: "refactor this README", "our README is a wall of text", "add collapsible sections to the README", "make this README scannable for seniors", "generate docs for this package".'
 metadata:
   category: documentation
+  tags: "documentation, readme, markdown, collapsible, refactoring"
 ---
 
 ## Purpose

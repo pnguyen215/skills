@@ -3,6 +3,7 @@ name: java-javadoc-engineer
 description: 'Generate, audit, refactor, and validate production-grade JavaDoc for Java projects, ensuring API contract accuracy over verbosity. Trigger: "write javadoc", "audit javadoc", "fix javadoc warnings", "improve java docs", "generate api documentation", "document this java class".'
 metadata:
   category: language-specific
+  tags: "java, javadoc, documentation, api-contract, audit"
 ---
 
 ## Purpose

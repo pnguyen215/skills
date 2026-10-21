@@ -3,6 +3,7 @@ name: replify-go-api-design
 description: 'Designs ergonomic, chainable Go APIs using functional options and fluent setters. Trigger: "functional options pattern", "fluent setters Go", "With* options", "refactor options and setters".'
 metadata:
   category: ecosystem-replify
+  tags: "replify, golang, api-design, functional-options, fluent-api"
 ---
 
 # Go: Ergonomic API Design (Options & Setters)

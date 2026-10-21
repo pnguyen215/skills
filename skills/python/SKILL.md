@@ -3,6 +3,7 @@ name: python
 description: 'Modern Python: type hinting (Pydantic), async/asyncio, packaging. Trigger: "Python type hints", "async Python best practices", "FastAPI standards".'
 metadata:
   category: language-specific
+  tags: "python, type-hints, pydantic, asyncio, packaging"
 ---
 
 # Modern Python Standards

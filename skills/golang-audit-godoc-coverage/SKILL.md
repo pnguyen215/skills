@@ -3,6 +3,7 @@ name: golang-audit-godoc-coverage
 description: 'Audits and generates GoDoc-compliant inline documentation for pkg.go.dev readiness. Trigger: "audit godoc", "fix pkg.go.dev comments", "generate GoDoc examples", "coverage gap report".'
 metadata:
   category: language-specific
+  tags: "golang, godoc, documentation, audit, pkg-go-dev"
 ---
 
 # Go Audit: GoDoc Coverage & Standards

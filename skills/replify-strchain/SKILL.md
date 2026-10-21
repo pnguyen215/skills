@@ -3,6 +3,7 @@ name: replify-strchain
 description: 'Enforces fluent, chainable string building and indentation management using replify/pkg/strchain. Trigger: "use strchain", "string builder replify", "indentation management", "migrate strings.Builder".'
 metadata:
   category: ecosystem-replify
+  tags: "replify, golang, strings, fluent-api, string-builder"
 ---
 
 # replify/strchain: Fluent String Building & Indentation

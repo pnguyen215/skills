@@ -3,6 +3,7 @@ name: replify-go-encapsulation
 description: 'Enforces extreme struct encapsulation, nil-receiver safety, and defensive copying in Go. Trigger: "encapsulate struct", "defensive copy Go", "nil-safe getter", "refactor struct encapsulation".'
 metadata:
   category: ecosystem-replify
+  tags: "replify, golang, encapsulation, nil-safety, defensive-copy"
 ---
 
 # Go: Extreme Struct Encapsulation

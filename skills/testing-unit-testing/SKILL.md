@@ -3,6 +3,7 @@ name: testing-unit-testing
 description: 'FIRST principles, mocking vs stubbing, TDD workflows. Trigger: "write unit tests", "mock database", "TDD", "test isolation".'
 metadata:
   category: testing
+  tags: "testing, unit-testing, tdd, mocking, first-principles"
 ---
 
 # Testing: Unit Testing

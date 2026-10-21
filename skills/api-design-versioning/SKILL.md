@@ -3,6 +3,7 @@ name: api-design-versioning
 description: 'Strategies for API versioning (URI, Header) and deprecation policies. Trigger: "API versioning strategy", "deprecate API endpoint", "sunset API".'
 metadata:
   category: api-design
+  tags: "api, versioning, deprecation, backward-compatibility, rest"
 ---
 
 # API Versioning & Deprecation

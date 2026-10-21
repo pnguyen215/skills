@@ -3,6 +3,7 @@ name: replify-slogger
 description: 'Guides the implementation of high-performance, zero-allocation structured logging using the replify/pkg/slogger package. Trigger: "setup slogger", "structured logging replify", "zero-alloc logger".'
 metadata:
   category: ecosystem-replify
+  tags: "replify, golang, logging, slog, zero-allocation"
 ---
 
 # replify/slogger: Zero-Allocation Structured Logging

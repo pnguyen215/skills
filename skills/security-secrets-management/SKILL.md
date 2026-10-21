@@ -3,6 +3,7 @@ name: security-secrets-management
 description: 'HashiCorp Vault, AWS Secrets Manager, preventing hardcoded secrets. Trigger: "setup Vault", "remove hardcoded secrets", "rotate credentials".'
 metadata:
   category: security
+  tags: "security, secrets, vault, aws-secrets-manager, hardcoded-secrets"
 ---
 
 # Security: Secrets Management

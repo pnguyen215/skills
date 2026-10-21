@@ -3,6 +3,7 @@ name: security-secure-coding
 description: 'Preventing OWASP Top 10, input validation, secure-by-default design. Trigger: "prevent SQL injection", "secure coding checklist", "XSS prevention".'
 metadata:
   category: security
+  tags: "security, owasp, input-validation, secure-by-default, injection"
 ---
 
 # Security: Secure Coding

@@ -3,6 +3,7 @@ name: golang
 description: 'Enterprise Go standards: modules, generics, slog, context propagation, concurrency. Trigger: "Go best practices", "write idiomatic Go", "golang review".'
 metadata:
   category: language-specific
+  tags: "golang, go-modules, generics, slog, concurrency, context"
 ---
 
 # Enterprise Go Standards

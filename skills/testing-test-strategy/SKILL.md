@@ -3,6 +3,7 @@ name: testing-test-strategy
 description: 'Test Pyramids, integration testing, test environment management. Trigger: "design test strategy", "test pyramid rules", "integration tests".'
 metadata:
   category: testing
+  tags: "testing, test-pyramid, integration-testing, test-environments, strategy"
 ---
 
 # Testing: Strategy

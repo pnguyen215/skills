@@ -3,6 +3,7 @@ name: java
 description: 'Modern Java standards: Spring Boot 3, Records, Virtual Threads, GraalVM. Trigger: "Java 21 best practices", "Spring Boot conventions", "modern Java".'
 metadata:
   category: language-specific
+  tags: "java, spring-boot, records, virtual-threads, graalvm"
 ---
 
 # Modern Java Standards

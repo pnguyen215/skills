@@ -3,6 +3,7 @@ name: golang-godoc-engineer
 description: 'Generate, audit, refactor, and validate idiomatic Go documentation (GoDoc) for Go packages and APIs. Trigger: "write godoc", "audit go docs", "fix godoc", "add executable examples", "document this go package", "generate pkg.go.dev docs".'
 metadata:
   category: language-specific
+  tags: "golang, godoc, documentation, examples, pkg-go-dev"
 ---
 
 ## Purpose

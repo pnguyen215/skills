@@ -3,6 +3,7 @@ name: observability-tracing
 description: 'Distributed tracing with OpenTelemetry, span context propagation. Trigger: "setup OpenTelemetry", "trace HTTP requests", "distributed tracing".'
 metadata:
   category: observability
+  tags: "observability, tracing, opentelemetry, distributed-tracing, context-propagation"
 ---
 
 # Observability: Tracing

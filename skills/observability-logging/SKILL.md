@@ -3,6 +3,7 @@ name: observability-logging
 description: 'Structured logging, log levels, correlation IDs, PII masking. Trigger: "setup structured logging", "mask PII in logs", "JSON logs".'
 metadata:
   category: observability
+  tags: "observability, logging, structured-logging, correlation-id, pii"
 ---
 
 # Observability: Logging
