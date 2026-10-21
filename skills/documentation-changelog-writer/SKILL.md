@@ -3,6 +3,7 @@ name: documentation-changelog-writer
 description: 'Generate, update, and review high-quality CHANGELOG.md files based on Git history and repository conventions. Trigger: "write changelog", "update changelog", "generate release notes", "summarize git commits", "review changelog", "draft release notes".'
 metadata:
   category: documentation
+  tags: "documentation, changelog, release-notes, technical-writing, release-management"
 ---
 
 ## Purpose
