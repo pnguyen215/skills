@@ -75,3 +75,5 @@ system-design-reviewer: system-design, architecture, review, non-functional-requ
 testing-test-coverage: testing, coverage, branch-coverage, mutation-testing, metrics
 testing-test-strategy: testing, test-pyramid, integration-testing, test-environments, strategy
 testing-unit-testing: testing, unit-testing, tdd, mocking, first-principles
+
+shell-shdoc-engineer: bash, shell, documentation, posix, comments, technical-writing
