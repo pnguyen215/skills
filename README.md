@@ -283,6 +283,7 @@ Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded 
 | `design`            | `design-system`                    | `design-system`, `ui`, `ux`, `design-tokens`, `component-library`                             |
 | `design`            | `system-design-reviewer`           | `system-design`, `architecture`, `review`, `non-functional-requirements`, `trade-offs`        |
 | `documentation`     | `documentation-api-documentation`  | `documentation`, `openapi`, `swagger`, `grpc`, `proto`                                        |
+| `documentation`     | `documentation-changelog-writer`   | `documentation`, `changelog`, `release-notes`, `technical-writing`, `release-management`      |
 | `documentation`     | `documentation-collapsible-readme` | `documentation`, `readme`, `markdown`, `collapsible`, `refactoring`                           |
 | `documentation`     | `documentation-readme-generator`   | `documentation`, `readme`, `markdown`, `onboarding`, `repository`                             |
 | `documentation`     | `documentation-technical-writing`  | `documentation`, `adr`, `runbook`, `rfc`, `technical-writing`                                 |
