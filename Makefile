@@ -1,5 +1,5 @@
 # Makefile for maintaining this skills repository (linting, validation, scaffolding).
-.PHONY: tree tree-dirs clean help lint validate new-skill test
+.PHONY: tree tree-dirs clean help lint validate validate-tags tags skills-table new-skill test
 
 LOG_DIR := logs
 
@@ -30,7 +30,7 @@ lint: ## Lint markdown files
 	@echo "Linting markdown files..."
 	@npx --yes markdownlint-cli2 "**/*.md" "#node_modules" "#templates" || true
 
-validate: ## Ensure every skills/<name>/ folder has a non-empty SKILL.md with name + description
+validate: validate-tags ## Ensure every skills/<name>/ has a valid SKILL.md (name, description) and metadata.tags
 	@echo "Validating skills/*/SKILL.md ..."
 	@status=0; \
 	for dir in skills/*/; do \
@@ -53,16 +53,25 @@ validate: ## Ensure every skills/<name>/ folder has a non-empty SKILL.md with na
 	exit $$status
 	@echo "All skill folders contain a valid SKILL.md."
 
+validate-tags: ## Ensure every SKILL.md declares metadata.tags (3-8 lowercase kebab-case tags)
+	@bash scripts/validate-tags.sh
+
+tags: ## Insert metadata.tags into every SKILL.md from scripts/skill-tags.txt (FORCE=1 overwrites existing tags)
+	@bash scripts/add-tags.sh $(if $(FORCE),--force,)
+
+skills-table: ## Regenerate the Available Skills table in README.md from SKILL.md frontmatter
+	@bash scripts/skills-table.sh --write
+
 new-skill: ## Scaffold a new skill (Usage: make new-skill NAME=skill-slug)
 	@if [ -z "$(NAME)" ]; then echo "Usage: make new-skill NAME=skill-slug"; exit 1; fi
 	@if [ -d "skills/$(NAME)" ]; then echo "skills/$(NAME) already exists."; exit 1; fi
 	@mkdir -p "skills/$(NAME)"
 	@cp templates/SKILL.template.md "skills/$(NAME)/SKILL.md"
 	@sed -i.bak "s/<kebab-case-name>/$(NAME)/" "skills/$(NAME)/SKILL.md" && rm -f "skills/$(NAME)/SKILL.md.bak"
-	@echo "Created skills/$(NAME)/SKILL.md - please fill in the details."
+	@echo "Created skills/$(NAME)/SKILL.md - fill in the details, incl. metadata.category and metadata.tags (make validate enforces tags)."
 
 test: ## Run the installer test checklist's scripted checks (syntax + dry-run smoke test)
-	@bash -n install.sh && bash -n uninstall.sh && bash -n upgrade.sh && bash -n scripts/lib.sh && bash -n sync_claude.sh && bash -n sync_opencode.sh
+	@bash -n install.sh && bash -n uninstall.sh && bash -n upgrade.sh && bash -n scripts/lib.sh && bash -n sync_claude.sh && bash -n sync_opencode.sh && bash -n scripts/add-tags.sh && bash -n scripts/validate-tags.sh && bash -n scripts/skills-table.sh
 	@echo "Shell syntax OK."
 	@HOME=$$(mktemp -d) ./install.sh --dry-run --yes --tool all --scope personal
 	@echo "Dry-run smoke test OK."
