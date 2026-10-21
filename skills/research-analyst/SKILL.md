@@ -3,6 +3,7 @@ name: research-analyst
 description: 'Conduct systematic research, verify technical claims, evaluate sources, and synthesize evidence-backed reports. Trigger: "research X", "verify this claim", "compare X and Y based on evidence", "find primary sources for", "is it true that", "fact check", "what does the spec say about".'
 metadata:
   category: research
+  tags: "research, fact-checking, source-evaluation, evidence, reporting"
 ---
 
 ## Purpose

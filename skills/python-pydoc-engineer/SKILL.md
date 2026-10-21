@@ -3,6 +3,7 @@ name: python-pydoc-engineer
 description: 'Generate, audit, refactor, and validate idiomatic Python docstrings (PEP 257, Google, NumPy, Sphinx) and API documentation. Trigger: "write docstring", "audit pydoc", "fix docstring", "add doctest", "document this python class", "convert to google style docstring".'
 metadata:
   category: language-specific
+  tags: "python, docstrings, pep-257, sphinx, documentation"
 ---
 
 ## Purpose

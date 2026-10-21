@@ -3,6 +3,7 @@ name: performance-profiling
 description: 'CPU, memory, and goroutine profiling using pprof/async-profiler. Trigger: "profile CPU usage", "find memory leaks", "flamegraph".'
 metadata:
   category: performance
+  tags: "performance, profiling, pprof, cpu, memory, goroutines"
 ---
 
 # Performance: Profiling

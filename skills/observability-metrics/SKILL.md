@@ -3,6 +3,7 @@ name: observability-metrics
 description: 'RED/USE metrics, Prometheus exposition, SLO/SLI tracking. Trigger: "define SLOs", "setup Prometheus metrics", "dashboard design".'
 metadata:
   category: observability
+  tags: "observability, metrics, prometheus, slo, sli"
 ---
 
 # Observability: Metrics

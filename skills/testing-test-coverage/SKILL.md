@@ -3,6 +3,7 @@ name: testing-test-coverage
 description: 'Meaningful coverage metrics, branch vs line coverage, mutation testing. Trigger: "increase test coverage", "setup mutation testing", "codecov".'
 metadata:
   category: testing
+  tags: "testing, coverage, branch-coverage, mutation-testing, metrics"
 ---
 
 # Testing: Coverage

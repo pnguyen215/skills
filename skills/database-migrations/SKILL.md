@@ -3,6 +3,7 @@ name: database-migrations
 description: 'Safe database schema migrations, zero-downtime deployments, rollbacks. Trigger: "database migration strategy", "zero-downtime schema change", "flyway".'
 metadata:
   category: database
+  tags: "database, migrations, zero-downtime, rollback, schema"
 ---
 
 # Database Migrations

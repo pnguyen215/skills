@@ -3,6 +3,7 @@ name: code-quality-static-analysis
 description: 'Configuration and enforcement of linters, SAST, and complexity metrics. Trigger: "setup linters", "configure golangci-lint", "fix lint errors".'
 metadata:
   category: code-quality
+  tags: "static-analysis, linting, sast, complexity, code-quality"
 ---
 
 # Static Analysis

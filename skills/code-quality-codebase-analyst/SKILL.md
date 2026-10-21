@@ -3,6 +3,7 @@ name: code-quality-codebase-analyst
 description: 'Analyze existing codebases to map structure, trace execution paths, verify implementation behavior, and identify technical risks. Trigger: "analyze this repo", "how does feature X work", "trace the request lifecycle", "find where Y is called", "explain this codebase", "investigate this bug in the code".'
 metadata:
   category: code-quality
+  tags: "codebase-analysis, architecture, execution-tracing, onboarding, reverse-engineering"
 ---
 
 ## Purpose

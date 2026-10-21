@@ -3,6 +3,7 @@ name: design-concept-explainer
 description: 'Explain complex technical concepts, system design patterns, and algorithms clearly, accurately, and practically. Trigger: "explain X", "what is X", "how does X work", "X vs Y", "when to use X", "deep dive into X", "why do we need X".'
 metadata:
   category: design
+  tags: "explanation, system-design, algorithms, teaching, technical-communication"
 ---
 
 ## Purpose

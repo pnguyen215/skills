@@ -3,6 +3,7 @@ name: security-dependency-scanning
 description: 'SBOM generation, CVE scanning (Trivy, Dependabot), license compliance. Trigger: "setup dependency scanning", "generate SBOM", "check CVEs".'
 metadata:
   category: security
+  tags: "security, sbom, cve, trivy, dependabot, license-compliance"
 ---
 
 # Security: Dependency Scanning

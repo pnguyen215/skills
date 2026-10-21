@@ -3,6 +3,7 @@ name: performance-benchmarking
 description: 'Micro-benchmarking rules, statistical significance, preventing compiler optimizations. Trigger: "write micro-benchmark", "prevent compiler optimization", "benchstat".'
 metadata:
   category: performance
+  tags: "performance, benchmarking, micro-benchmark, statistics, compiler-optimization"
 ---
 
 # Performance: Benchmarking

@@ -3,6 +3,7 @@ name: code-quality-code-review
 description: 'Comprehensive PR review checklists focusing on architecture, security, and maintainability. Trigger: "review this PR", "code review checklist", "PR feedback".'
 metadata:
   category: code-quality
+  tags: "code-review, pull-request, architecture, security, maintainability"
 ---
 
 # Code Review

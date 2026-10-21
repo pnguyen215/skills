@@ -3,6 +3,7 @@ name: code-quality-refactoring
 description: 'Strategies for eliminating code smells, applying SOLID, and improving cohesion. Trigger: "refactor this code", "clean up legacy", "remove code smells".'
 metadata:
   category: code-quality
+  tags: "refactoring, code-smells, solid, cohesion, clean-code"
 ---
 
 # Refactoring

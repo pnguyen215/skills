@@ -3,6 +3,7 @@ name: system-design-reviewer
 description: 'Evaluate system architectures against functional/non-functional requirements, constraints, and operational realities. Trigger: "review this architecture", "evaluate this system design", "critique this design", "is this design scalable", "find flaws in this architecture", "compare these architectures".'
 metadata:
   category: design
+  tags: "system-design, architecture, review, non-functional-requirements, trade-offs"
 ---
 
 ## Purpose

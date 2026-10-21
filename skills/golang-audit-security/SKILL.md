@@ -3,6 +3,7 @@ name: golang-audit-security
 description: 'Audits Go code for common security vulnerabilities (injection, unsafe deserialization, weak crypto, secret handling) and enforces govulncheck/gosec-backed remediation. Trigger: "security audit Go code", "run gosec", "check govulncheck", "Go CVE audit", "harden Go handler".'
 metadata:
   category: language-specific
+  tags: "golang, security, audit, injection, cryptography, secrets"
 ---
 
 # Go Audit: Security
