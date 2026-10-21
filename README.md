@@ -23,16 +23,19 @@ curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/install.sh
 <summary><strong>Overview</strong></summary>
 
 ### Problem solved
+
 This repository solves the problem of sharing and installing consistent, enterprise-grade agent skill definitions across Claude Code and OpenCode without duplication or manual copying. It packages 47 self-contained skills following the [Agent Skills](https://agentskills.io) open standard, with safe installation/uninstallation/upgrade/sync tooling.
 
 ### Design rationale
+
 - **Single source of truth**: Skill content lives once under `skills/` and is symlinked (by default) to tool-specific locations, avoiding duplication.
 - **Tool-agnostic packaging**: Works for both Claude Code and OpenCode, installing to their native paths.
 - **Safe by construction**: No `sudo`, operates only in home/project directories, backs up existing files, tracks installs via a manifest outside skill directories, and only touches managed files.
 - **Scriptable and idempotent**: Supports dry runs, non-interactive execution, and safe re-runs.
 
 ### Key features
-- **47 skills**: Each is a self-contained `skills/<slug>/SKILL.md` following the Agent Skills open standard.
+
+- **52 skills**, each tagged: Each is a self-contained `skills/<slug>/SKILL.md` following the Agent Skills open standard.
 - **One repo, two tools**: Installs into Claude Code and/or OpenCode for personal (global) and/or project (local) scope without duplicating files (symlinked by default).
 - **Safe by construction**: No `sudo`, nothing written outside your home directory or a project folder you point at, automatic backup of anything it would overwrite, and a removal-safe manifest so `uninstall.sh` only ever touches what this tool installed.
 - **Idempotent and scriptable**: Re-running `install.sh` is a no-op when nothing changed; `--dry-run`, `--yes`, and `--skills <a,b,c>` make it safe to call from other automation.
@@ -40,6 +43,7 @@ This repository solves the problem of sharing and installing consistent, enterpr
 - **Cross-platform**: Linux, macOS, and Windows (via Git Bash, MSYS2, or WSL).
 
 ### When to use vs. not
+
 - **Use when**: You want standardized engineering guidance (API design, CI/CD, security, testing, observability, language conventions, etc.) available to Claude Code or OpenCode across projects or teams.
 - **Not for**: Creating API reference docs, CHANGELOGs, or ADRs as the primary deliverable (those have their own conventions). This repo is for installing Agent Skills, not generating arbitrary project documentation outside the skill format.
 
@@ -53,6 +57,7 @@ This repository solves the problem of sharing and installing consistent, enterpr
 <summary><strong>Installation</strong></summary>
 
 ### Prerequisites
+
 - `bash` v4+ (default on Linux/macOS; bundled with Git Bash/MSYS2/WSL on Windows).
 - One of: `git` (recommended — enables incremental `upgrade.sh`), or `curl`/`wget` (tarball fallback).
 - Claude Code and/or OpenCode already installed, for whichever tool(s) you target.
@@ -66,6 +71,7 @@ This repository solves the problem of sharing and installing consistent, enterpr
 | [OpenCode](https://github.com/anomalyco/opencode)        | `~/.config/opencode/skills/<name>/SKILL.md` | `<project>/.opencode/skills/<name>/SKILL.md` |
 
 Sources (confirmed from official docs):
+
 - Claude Code: ["Choose where skills live"](https://code.claude.com/docs/en/skills#where-skills-live) — personal `~/.claude/skills/<skill-name>/SKILL.md`, project `.claude/skills/<skill-name>/SKILL.md`.
 - OpenCode: ["Agent Skills"](https://opencode.ai/docs/skills) — project `.opencode/skills/<name>/SKILL.md`, global `~/.config/opencode/skills/<name>/SKILL.md`. (OpenCode also auto-discovers `.claude/skills/` and `~/.claude/skills/` as "Claude-compatible" paths, but this repo installs OpenCode's own native paths explicitly.)
 - Platforms: **Linux**, **macOS**, **Windows** (Bash required — run under **Git Bash**, **MSYS2**, or **WSL**).
@@ -73,13 +79,16 @@ Sources (confirmed from official docs):
 ### Install methods
 
 #### Remote one-liner (no clone needed)
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/pnguyen215/skills/master/install.sh \
   | bash -s -- --tool all --scope personal --yes
 ```
+
 On **Windows**, run the same command inside **Git Bash** or **WSL**.
 
 #### Clone and run
+
 ```bash
 git clone https://github.com/pnguyen215/skills.git
 cd skills
@@ -87,6 +96,7 @@ cd skills
 ```
 
 #### Common variations
+
 ```bash
 # Only Claude Code, only this project (run from the project's root directory)
 ./install.sh --tool claude --scope project
@@ -124,6 +134,7 @@ By default each skill is installed as a **symlink** back to the fetched source (
    - In OpenCode: ask about a matching topic and OpenCode will auto-trigger via its `skill` tool, or explicitly request a skill by name.
 
 **Verify quickly:**
+
 - Claude Code: run `/skills` or `/doctor`.
 - OpenCode: ask "What skills do you have available related to Go?" or invoke via the skill tool.
 
@@ -204,6 +215,7 @@ Check available skills, invoke directly by slug, or pass additional context to t
 <summary><strong>API / Configuration Reference</strong></summary>
 
 ### Options Reference (all scripts)
+
 All scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`, `sync_claude.sh`, `sync_opencode.sh`) accept the same core flags:
 
 | Flag                   | Values                           | Default           | Meaning                                                |
@@ -231,6 +243,7 @@ All scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`, `sync_claude.sh`, `sync
 `--tool` is fixed to `claude` / `opencode` for the `sync_*` scripts.
 
 ### `--mode` trade-off
+
 `symlink` means zero duplication — `upgrade.sh` instantly reflects new content because the link always points at the freshly pulled source. It needs filesystem symlink support, which on native Windows needs Developer Mode or an elevated shell; this tool **never requests elevation**, so `--mode auto` silently falls back to `copy` there. `copy` always works, but `upgrade.sh` must physically re-copy changed files, and a local edit inside an installed copy won't propagate back (and will be overwritten on the next upgrade).
 
 ### Exit codes
@@ -245,26 +258,70 @@ All scripts (`install.sh`, `uninstall.sh`, `upgrade.sh`, `sync_claude.sh`, `sync
 | `5`  | Network error (clone or download failed)              |
 
 ### Available Skills (by category)
-Grouped by `metadata.category` (recorded in frontmatter, not by folder nesting — layout is flat, one folder per skill).
 
-| Category            | Skills                                                                                                                                                              |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api-design`        | `api-design-error-models`, `api-design-rest-grpc-conventions`, `api-design-versioning`                                                                              |
-| `ci-cd`             | `ci-cd-pipelines`, `ci-cd-quality-gates`, `ci-cd-release-management`                                                                                                |
-| `code-quality`      | `code-quality-code-review`, `code-quality-refactoring`, `code-quality-static-analysis`                                                                              |
-| `database`          | `database-migrations`, `database-postgres-migrations`, `database-query-optimization`, `database-schema-design`                                                      |
-| `design`            | `design-pattern`, `design-system`                                                                                                                                   |
-| `documentation`     | `documentation-api-documentation`, `documentation-collapsible-readme`, `documentation-readme-generator`, `documentation-technical-writing`                          |
-| `ecosystem-replify` | `replify-go-api-design`, `replify-go-encapsulation`, `replify-slogger`, `replify-strchain`, `replify-strutil`                                                       |
-| `git-workflow`      | `git-workflow-branching`, `git-workflow-commit-conventions`, `git-workflow-pr-templates`                                                                            |
-| `incident-response` | `incident-response-postmortem`                                                                                                                                      |
-| `language-specific` | `golang`, `golang-audit-cross-platform`, `golang-audit-godoc-coverage`, `golang-audit-security`, `golang-godoc-engineer`, `java`, `java-javadoc-engineer`, `python` |
-| `observability`     | `observability-logging`, `observability-metrics`, `observability-tracing`                                                                                           |
-| `performance`       | `performance-benchmarking`, `performance-profiling`                                                                                                                 |
-| `security`          | `security-dependency-scanning`, `security-secrets-management`, `security-secure-coding`                                                                             |
-| `testing`           | `testing-test-coverage`, `testing-test-strategy`, `testing-unit-testing`                                                                                            |
+Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded in each skill's frontmatter — layout is flat, one folder per skill). Tags make skills easy to search, e.g. `grep -l "owasp" skills/*/SKILL.md`. This table is generated by `make skills-table`; do not edit it by hand.
+
+<!-- skills-table:start -->
+
+| Category            | Skill                              | Tags                                                                                          |
+| ------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| `api-design`        | `api-design-error-models`          | `api`, `error-handling`, `rfc-7807`, `http-status`, `grpc`                                    |
+| `api-design`        | `api-design-rest-grpc-conventions` | `api`, `rest`, `grpc`, `naming`, `pagination`                                                 |
+| `api-design`        | `api-design-versioning`            | `api`, `versioning`, `deprecation`, `backward-compatibility`, `rest`                          |
+| `ci-cd`             | `ci-cd-pipelines`                  | `ci-cd`, `github-actions`, `gitlab-ci`, `matrix-builds`, `caching`                            |
+| `ci-cd`             | `ci-cd-quality-gates`              | `ci-cd`, `quality-gate`, `sonarqube`, `coverage`, `linting`                                   |
+| `ci-cd`             | `ci-cd-release-management`         | `ci-cd`, `release`, `semver`, `changelog`, `publishing`                                       |
+| `code-quality`      | `code-quality-code-review`         | `code-review`, `pull-request`, `architecture`, `security`, `maintainability`                  |
+| `code-quality`      | `code-quality-codebase-analyst`    | `codebase-analysis`, `architecture`, `execution-tracing`, `onboarding`, `reverse-engineering` |
+| `code-quality`      | `code-quality-refactoring`         | `refactoring`, `code-smells`, `solid`, `cohesion`, `clean-code`                               |
+| `code-quality`      | `code-quality-static-analysis`     | `static-analysis`, `linting`, `sast`, `complexity`, `code-quality`                            |
+| `database`          | `database-migrations`              | `database`, `migrations`, `zero-downtime`, `rollback`, `schema`                               |
+| `database`          | `database-postgres-migrations`     | `postgresql`, `migrations`, `flyway`, `liquibase`, `partitioning`                             |
+| `database`          | `database-query-optimization`      | `database`, `sql`, `indexing`, `explain-plan`, `n-plus-one`, `performance`                    |
+| `database`          | `database-schema-design`           | `database`, `schema`, `normalization`, `constraints`, `data-modeling`                         |
+| `design`            | `design-concept-explainer`         | `explanation`, `system-design`, `algorithms`, `teaching`, `technical-communication`           |
+| `design`            | `design-pattern`                   | `design-patterns`, `gof`, `enterprise-integration`, `architecture`, `refactoring`             |
+| `design`            | `design-system`                    | `design-system`, `ui`, `ux`, `design-tokens`, `component-library`                             |
+| `design`            | `system-design-reviewer`           | `system-design`, `architecture`, `review`, `non-functional-requirements`, `trade-offs`        |
+| `documentation`     | `documentation-api-documentation`  | `documentation`, `openapi`, `swagger`, `grpc`, `proto`                                        |
+| `documentation`     | `documentation-collapsible-readme` | `documentation`, `readme`, `markdown`, `collapsible`, `refactoring`                           |
+| `documentation`     | `documentation-readme-generator`   | `documentation`, `readme`, `markdown`, `onboarding`, `repository`                             |
+| `documentation`     | `documentation-technical-writing`  | `documentation`, `adr`, `runbook`, `rfc`, `technical-writing`                                 |
+| `ecosystem-replify` | `replify-go-api-design`            | `replify`, `golang`, `api-design`, `functional-options`, `fluent-api`                         |
+| `ecosystem-replify` | `replify-go-encapsulation`         | `replify`, `golang`, `encapsulation`, `nil-safety`, `defensive-copy`                          |
+| `ecosystem-replify` | `replify-slogger`                  | `replify`, `golang`, `logging`, `slog`, `zero-allocation`                                     |
+| `ecosystem-replify` | `replify-strchain`                 | `replify`, `golang`, `strings`, `fluent-api`, `string-builder`                                |
+| `ecosystem-replify` | `replify-strutil`                  | `replify`, `golang`, `strings`, `validation`, `transformation`                                |
+| `git-workflow`      | `git-workflow-branching`           | `git`, `branching`, `trunk-based`, `gitflow`, `branch-protection`                             |
+| `git-workflow`      | `git-workflow-commit-conventions`  | `git`, `conventional-commits`, `commitlint`, `changelog`, `automation`                        |
+| `git-workflow`      | `git-workflow-pr-templates`        | `git`, `pull-request`, `templates`, `code-review`, `collaboration`                            |
+| `incident-response` | `incident-response-postmortem`     | `incident-response`, `postmortem`, `rca`, `five-whys`, `blameless`                            |
+| `language-specific` | `golang`                           | `golang`, `go-modules`, `generics`, `slog`, `concurrency`, `context`                          |
+| `language-specific` | `golang-audit-cross-platform`      | `golang`, `audit`, `cross-platform`, `concurrency`, `resource-safety`                         |
+| `language-specific` | `golang-audit-godoc-coverage`      | `golang`, `godoc`, `documentation`, `audit`, `pkg-go-dev`                                     |
+| `language-specific` | `golang-audit-security`            | `golang`, `security`, `audit`, `injection`, `cryptography`, `secrets`                         |
+| `language-specific` | `golang-godoc-engineer`            | `golang`, `godoc`, `documentation`, `examples`, `pkg-go-dev`                                  |
+| `language-specific` | `java`                             | `java`, `spring-boot`, `records`, `virtual-threads`, `graalvm`                                |
+| `language-specific` | `java-javadoc-engineer`            | `java`, `javadoc`, `documentation`, `api-contract`, `audit`                                   |
+| `language-specific` | `python`                           | `python`, `type-hints`, `pydantic`, `asyncio`, `packaging`                                    |
+| `language-specific` | `python-pydoc-engineer`            | `python`, `docstrings`, `pep-257`, `sphinx`, `documentation`                                  |
+| `observability`     | `observability-logging`            | `observability`, `logging`, `structured-logging`, `correlation-id`, `pii`                     |
+| `observability`     | `observability-metrics`            | `observability`, `metrics`, `prometheus`, `slo`, `sli`                                        |
+| `observability`     | `observability-tracing`            | `observability`, `tracing`, `opentelemetry`, `distributed-tracing`, `context-propagation`     |
+| `performance`       | `performance-benchmarking`         | `performance`, `benchmarking`, `micro-benchmark`, `statistics`, `compiler-optimization`       |
+| `performance`       | `performance-profiling`            | `performance`, `profiling`, `pprof`, `cpu`, `memory`, `goroutines`                            |
+| `research`          | `research-analyst`                 | `research`, `fact-checking`, `source-evaluation`, `evidence`, `reporting`                     |
+| `security`          | `security-dependency-scanning`     | `security`, `sbom`, `cve`, `trivy`, `dependabot`, `license-compliance`                        |
+| `security`          | `security-secrets-management`      | `security`, `secrets`, `vault`, `aws-secrets-manager`, `hardcoded-secrets`                    |
+| `security`          | `security-secure-coding`           | `security`, `owasp`, `input-validation`, `secure-by-default`, `injection`                     |
+| `testing`           | `testing-test-coverage`            | `testing`, `coverage`, `branch-coverage`, `mutation-testing`, `metrics`                       |
+| `testing`           | `testing-test-strategy`            | `testing`, `test-pyramid`, `integration-testing`, `test-environments`, `strategy`             |
+| `testing`           | `testing-unit-testing`             | `testing`, `unit-testing`, `tdd`, `mocking`, `first-principles`                               |
+
+<!-- skills-table:end -->
 
 ### Structure
+
 ```text
 skills/
 ├── api-design-error-models/SKILL.md
@@ -272,9 +329,11 @@ skills/
 ├── ...                                      # see "Available Skills" above
 └── testing-unit-testing/SKILL.md
 ```
-Categories are carried in each skill's `metadata.category` frontmatter field (not in folder paths). Other top-level files: `templates/SKILL.template.md`, `scripts/lib.sh`, `install.sh`, `upgrade.sh`, `uninstall.sh`, `sync_claude.sh`, `sync_opencode.sh`, `docs/maintainer-release-commands.sh`, `Makefile`, `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE`.
+
+Categories are carried in each skill's `metadata.category` frontmatter field (not in folder paths). Other top-level files: `templates/SKILL.template.md`, `scripts/lib.sh`, `scripts/skill-tags.txt`, `scripts/add-tags.sh`, `scripts/validate-tags.sh`, `scripts/skills-table.sh`, `install.sh`, `upgrade.sh`, `uninstall.sh`, `sync_claude.sh`, `sync_opencode.sh`, `docs/maintainer-release-commands.sh`, `Makefile`, `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE`.
 
 ### Safety Guarantees
+
 - **No `sudo`, ever.** Every path written to lives under `$HOME` (or an explicit `--project-dir` you chose).
 - **Only touches what it manages.** Every install is recorded in a manifest (`~/.local/state/pnguyen215-skills/manifest.tsv` by default). Only manifest-tracked entries and symlinks pointing into this tool's own cached clone are removed.
 - **Manifest never inside skills dirs.** Bookkeeping lives in a separate state directory (never inside `~/.claude/skills/`, `.claude/skills/`, `~/.config/opencode/skills/`, or `.opencode/skills/`).
@@ -285,6 +344,7 @@ Categories are carried in each skill's `metadata.category` frontmatter field (no
 - **Prerequisite-checked.** Missing `git`/`curl`/`wget` fails fast with exit code `3`.
 
 ### Troubleshooting & FAQ
+
 - **Permission denied creating symlink on Windows:** Enable Developer Mode or use `--mode copy` (tool never requests elevation).
 - **`./install.sh: command not found` or bad interpreter:** Run with Git Bash, MSYS2, or WSL (not cmd.exe/PowerShell).
 - **Nothing shows up after install:** Restart Claude Code/OpenCode session. Verify paths exist.
@@ -303,20 +363,26 @@ Categories are carried in each skill's `metadata.category` frontmatter field (no
 <details>
 <summary><strong>Contributing</strong></summary>
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to add or update a skill, naming conventions, and the quality bar for a pull request. All skills follow the strict template format and use `kebab-case` slugs, one level deep under `skills/`. 
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to add or update a skill, naming conventions, and the quality bar for a pull request. All skills follow the strict template format and use `kebab-case` slugs, one level deep under `skills/`.
 
 Short version:
+
 ```bash
 make new-skill NAME=your-new-skill-slug
 # edit skills/your-new-skill-slug/SKILL.md
+# set metadata.category and metadata.tags (required)
 make validate
+make skills-table
 ./install.sh --dry-run --yes --skills your-new-skill-slug
 ```
 
 Tooling:
+
 - `make lint` — lints markdown files.
-- `make validate` — ensures every `skills/*/SKILL.md` is non-empty, has valid frontmatter, a `description`, and a `name` matching its folder.
+- `make validate` — ensures every `skills/*/SKILL.md` is non-empty, has valid frontmatter, a `description`, a `name` matching its folder, and `metadata.tags` (3-8 lowercase kebab-case tags; also runnable alone as `make validate-tags`).
 - `make new-skill NAME=<slug>` — scaffolds a new skill from `templates/SKILL.template.md`.
+- `make tags` — inserts `metadata.tags` into every `SKILL.md` from `scripts/skill-tags.txt` (`make tags FORCE=1` overwrites existing tags; idempotent).
+- `make skills-table` — regenerates the Available Skills table (category, skill, tags) from the frontmatter.
 - `make test` — syntax-checks the installer scripts and runs a dry-run smoke test.
 
 No formal process yet — issues and pull requests are welcome.
