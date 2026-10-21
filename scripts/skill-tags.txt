@@ -1,0 +1,76 @@
+# =============================================================================
+# scripts/skill-tags.txt
+# Source data for `make tags` (scripts/add-tags.sh): "<skill-slug>: tag, tag, ...".
+# Rules: 3-8 tags per skill, lowercase kebab-case, reuse existing tags where possible.
+# New skills may simply set `metadata.tags` in their own SKILL.md; this file is only
+# needed for bulk edits (e.g. `make tags FORCE=1` rewrites tags from here).
+# =============================================================================
+api-design-error-models: api, error-handling, rfc-7807, http-status, grpc
+api-design-rest-grpc-conventions: api, rest, grpc, naming, pagination
+api-design-versioning: api, versioning, deprecation, backward-compatibility, rest
+
+ci-cd-pipelines: ci-cd, github-actions, gitlab-ci, matrix-builds, caching
+ci-cd-quality-gates: ci-cd, quality-gate, sonarqube, coverage, linting
+ci-cd-release-management: ci-cd, release, semver, changelog, publishing
+
+code-quality-code-review: code-review, pull-request, architecture, security, maintainability
+code-quality-codebase-analyst: codebase-analysis, architecture, execution-tracing, onboarding, reverse-engineering
+code-quality-refactoring: refactoring, code-smells, solid, cohesion, clean-code
+code-quality-static-analysis: static-analysis, linting, sast, complexity, code-quality
+
+database-migrations: database, migrations, zero-downtime, rollback, schema
+database-postgres-migrations: postgresql, migrations, flyway, liquibase, partitioning
+database-query-optimization: database, sql, indexing, explain-plan, n-plus-one, performance
+database-schema-design: database, schema, normalization, constraints, data-modeling
+
+design-concept-explainer: explanation, system-design, algorithms, teaching, technical-communication
+design-pattern: design-patterns, gof, enterprise-integration, architecture, refactoring
+design-system: design-system, ui, ux, design-tokens, component-library
+
+documentation-api-documentation: documentation, openapi, swagger, grpc, proto
+documentation-collapsible-readme: documentation, readme, markdown, collapsible, refactoring
+documentation-readme-generator: documentation, readme, markdown, onboarding, repository
+documentation-technical-writing: documentation, adr, runbook, rfc, technical-writing
+
+git-workflow-branching: git, branching, trunk-based, gitflow, branch-protection
+git-workflow-commit-conventions: git, conventional-commits, commitlint, changelog, automation
+git-workflow-pr-templates: git, pull-request, templates, code-review, collaboration
+
+golang: golang, go-modules, generics, slog, concurrency, context
+golang-audit-cross-platform: golang, audit, cross-platform, concurrency, resource-safety
+golang-audit-godoc-coverage: golang, godoc, documentation, audit, pkg-go-dev
+golang-audit-security: golang, security, audit, injection, cryptography, secrets
+golang-godoc-engineer: golang, godoc, documentation, examples, pkg-go-dev
+
+incident-response-postmortem: incident-response, postmortem, rca, five-whys, blameless
+
+java: java, spring-boot, records, virtual-threads, graalvm
+java-javadoc-engineer: java, javadoc, documentation, api-contract, audit
+
+observability-logging: observability, logging, structured-logging, correlation-id, pii
+observability-metrics: observability, metrics, prometheus, slo, sli
+observability-tracing: observability, tracing, opentelemetry, distributed-tracing, context-propagation
+
+performance-benchmarking: performance, benchmarking, micro-benchmark, statistics, compiler-optimization
+performance-profiling: performance, profiling, pprof, cpu, memory, goroutines
+
+python: python, type-hints, pydantic, asyncio, packaging
+python-pydoc-engineer: python, docstrings, pep-257, sphinx, documentation
+
+replify-go-api-design: replify, golang, api-design, functional-options, fluent-api
+replify-go-encapsulation: replify, golang, encapsulation, nil-safety, defensive-copy
+replify-slogger: replify, golang, logging, slog, zero-allocation
+replify-strchain: replify, golang, strings, fluent-api, string-builder
+replify-strutil: replify, golang, strings, validation, transformation
+
+research-analyst: research, fact-checking, source-evaluation, evidence, reporting
+
+security-dependency-scanning: security, sbom, cve, trivy, dependabot, license-compliance
+security-secrets-management: security, secrets, vault, aws-secrets-manager, hardcoded-secrets
+security-secure-coding: security, owasp, input-validation, secure-by-default, injection
+
+system-design-reviewer: system-design, architecture, review, non-functional-requirements, trade-offs
+
+testing-test-coverage: testing, coverage, branch-coverage, mutation-testing, metrics
+testing-test-strategy: testing, test-pyramid, integration-testing, test-environments, strategy
+testing-unit-testing: testing, unit-testing, tdd, mocking, first-principles
