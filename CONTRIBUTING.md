@@ -34,8 +34,11 @@ expect `(<skills-root>)/<skill-name>/SKILL.md`, exactly one level deep.
    description: "<what it does and when to trigger it, with concrete trigger phrases>"
    metadata:
      category: <existing-or-new-category>
+     tags: "<tag-one>, <tag-two>, <tag-three>"
    ---
    ```
+   `tags` is **required** (`make validate` fails without it): 3-8 lowercase kebab-case tags in one
+   comma-separated string, reusing existing tags where possible (see `scripts/skill-tags.txt`).
    Only use frontmatter fields from this short list unless you have a specific reason to target
    Claude Code only: `name`, `description`, `metadata`, `license`, `compatibility`,
    `allowed-tools`. These are the fields the
@@ -44,8 +47,10 @@ expect `(<skills-root>)/<skill-name>/SKILL.md`, exactly one level deep.
 5. If the skill ships supporting files (scripts, templates), put them inside the same
    `skills/<your-slug>/` folder and reference them from `SKILL.md` with a relative link, e.g.
    `skills/database-postgres-migrations/templates/V000__standard_table.sql`.
-6. Run `make validate` to check the frontmatter and folder-name agreement.
-7. Add a row for your skill to the table in `README.md` under the matching category heading.
+6. Run `make validate` to check the frontmatter, folder-name agreement and `metadata.tags`.
+7. Run `make skills-table` to regenerate the Available Skills table in `README.md` from the
+   frontmatter (do not edit that table by hand). Optionally add your skill to
+   `scripts/skill-tags.txt` too.
 8. Run `./install.sh --dry-run --yes --skills <your-slug>` to confirm the installer can see and
    place your new skill correctly.
 9. Submit a Pull Request.
