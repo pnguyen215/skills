@@ -1,6 +1,9 @@
 ---
 name: <kebab-case-name>
 description: <one to three sentences stating WHAT the skill does and WHEN to trigger it, including concrete trigger phrases>
+metadata:
+  category: <existing-or-new-category>
+  tags: "<tag-one>, <tag-two>, <tag-three>"
 ---
 
 # <Skill Title>
