@@ -17,6 +17,7 @@ code-quality-code-review: code-review, pull-request, architecture, security, mai
 code-quality-codebase-analyst: codebase-analysis, architecture, execution-tracing, onboarding, reverse-engineering
 code-quality-refactoring: refactoring, code-smells, solid, cohesion, clean-code
 code-quality-static-analysis: static-analysis, linting, sast, complexity, code-quality
+code-quality-logic-review-diagram: code-review, logic-analysis, sequence-diagram, activity-diagram, mermaid, architecture
 
 database-migrations: database, migrations, zero-downtime, rollback, schema
 database-postgres-migrations: postgresql, migrations, flyway, liquibase, partitioning
