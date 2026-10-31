@@ -78,3 +78,5 @@ testing-test-strategy: testing, test-pyramid, integration-testing, test-environm
 testing-unit-testing: testing, unit-testing, tdd, mocking, first-principles
 
 shell-shdoc-engineer: bash, shell, documentation, posix, comments, technical-writing
+
+skill-optimizer: prompt-engineering, optimization, agent-skills, performance
