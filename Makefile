@@ -1,24 +1,22 @@
 # Makefile for maintaining this skills repository (linting, validation, scaffolding).
+.DEFAULT_GOAL := help
 .PHONY: tree tree-dirs clean help lint validate validate-tags tags skills-table new-skill test
 
 LOG_DIR := logs
 
-# Generate a full project file tree into logs/codebase.txt (requires `tree`).
-tree:
+tree: ## Generate a full project file tree into logs/codebase.txt (requires `tree`).
 	@mkdir -p $(LOG_DIR)
 	@command -v tree >/dev/null 2>&1 || { echo "Install 'tree' to use this target."; exit 1; }
 	tree -I ".git|logs|node_modules" > ./$(LOG_DIR)/codebase.txt
 	cat ./$(LOG_DIR)/codebase.txt
 
-# Directories only, for a quick overview.
-tree-dirs:
+tree-dirs: ## Directories only, for a quick overview.
 	@mkdir -p $(LOG_DIR)
 	@command -v tree >/dev/null 2>&1 || { echo "Install 'tree' to use this target."; exit 1; }
 	tree -d -I ".git|logs|node_modules" > ./$(LOG_DIR)/codebase_dirs.txt
 	cat ./$(LOG_DIR)/codebase_dirs.txt
 
-# Remove generated/temporary files. Never touches skills/, install.sh, etc.
-clean:
+clean: ## Remove generated/temporary files. Never touches skills/, install.sh, etc.
 	@rm -rf $(LOG_DIR) node_modules .markdownlint-cli2*
 	@echo "Cleaned up temporary files."
 

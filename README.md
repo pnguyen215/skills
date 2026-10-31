@@ -307,6 +307,7 @@ Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded 
 | `language-specific` | `python`                            | `python`, `type-hints`, `pydantic`, `asyncio`, `packaging`                                         |
 | `language-specific` | `python-pydoc-engineer`             | `python`, `docstrings`, `pep-257`, `sphinx`, `documentation`                                       |
 | `language-specific` | `shell-shdoc-engineer`              | `bash`, `shell`, `documentation`, `posix`, `comments`, `technical-writing`                         |
+| `meta-skills`       | `skill-optimizer`                   |                                                                                                    |
 | `observability`     | `observability-logging`             | `observability`, `logging`, `structured-logging`, `correlation-id`, `pii`                          |
 | `observability`     | `observability-metrics`             | `observability`, `metrics`, `prometheus`, `slo`, `sli`                                             |
 | `observability`     | `observability-tracing`             | `observability`, `tracing`, `opentelemetry`, `distributed-tracing`, `context-propagation`          |
