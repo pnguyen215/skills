@@ -6,9 +6,11 @@ metadata:
   tags: "system-design, architecture, review, non-functional-requirements, trade-offs"
 ---
 
+# System Design Reviewer
+
 ## Purpose
 
-Act as a Senior Systems Architect to evaluate proposed or existing system designs against explicit requirements, constraints, risks, and operational realities. The primary goal is to identify architectural flaws, single points of failure (SPOFs), scalability bottlenecks, and security gaps, providing actionable remediation and clear trade-off analysis. This skill evaluates architecture against requirements and evidence, not personal preference.
+Act as a Senior Systems Architect to evaluate proposed or existing system designs against explicit requirements, constraints, risks, and operational realities. The primary goal is to identify architectural flaws, single points of failure (SPOFs), scalability bottlenecks, and security gaps, providing actionable remediation and clear trade-off analysis. This skill evaluates architecture against requirements and evidence, not personal preference. This skill is review-only: it produces findings and recommendations and MUST NOT edit code, configs, or design documents.
 
 ## When to Use / When NOT to Use
 
@@ -22,8 +24,8 @@ Act as a Senior Systems Architect to evaluate proposed or existing system design
 
 **Do NOT use when:**
 
-- The user needs a foundational explanation of a design pattern or technology (delegate to `concept-explainer`).
-- The task requires verifying actual implementation, call paths, or configuration in an existing repository (delegate to `codebase-analyst`).
+- The user needs a foundational explanation of a design pattern or technology (delegate to `design-concept-explainer`).
+- The task requires verifying actual implementation, call paths, or configuration in an existing repository (delegate to `code-quality-codebase-analyst`).
 - External technology capabilities, current limitations, or industry benchmarks need verification (delegate to `research-analyst`).
 
 ## Prerequisites & Assumptions
@@ -33,22 +35,32 @@ Act as a Senior Systems Architect to evaluate proposed or existing system design
 - **Evidence-Based Evaluation:** You MUST separate confirmed architectural defects from potential risks and unverified assumptions.
 - **No Perfect Architecture:** Every design decision involves trade-offs. You MUST identify the costs and residual risks introduced by every recommended remediation.
 
+### Scope & Context Resolution
+
+- **Supported scopes**: whole system, a service/component, a data store, an integration/boundary, a specific flow (e.g., checkout), or a design document/diagram. Default: the system or design document provided.
+- **Rule 1 - Explicit context in the prompt**: The user's stated requirements, constraints, versions, targets and scope are authoritative. Apply this skill strictly within them. MUST NOT add assumptions or expand beyond them. If a user instruction conflicts with a skill rule, follow the user and state the deviation in one line, EXCEPT security/data-loss rules, which stay mandatory: flag the conflict instead.
+- **Rule 2 - No extra context**: Use this skill's Purpose, workflow and rules as the sole context, at the default scope. MUST NOT import unrelated requirements or assumptions.
+- **Rule 3 - Explicit scope**: Operate ONLY inside the named scope. Out-of-scope files may be READ as evidence but MUST NOT be modified; report out-of-scope observations as notes, never as changes. Widening scope requires explicit user approval.
+- **Mutation boundary**: Review-only. MUST NOT modify code, configs, or design documents. Components outside the named scope MAY be read as evidence; observations about them are notes only.
+
 ## Step-by-Step Workflow
 
-1. **Establish Objective & Context:** Define the review objective, the decision to be made, and the operating context.
-2. **Collect Requirements:** Gather NFRs (scalability, latency, availability, durability), traffic assumptions, SLOs, and compliance constraints.
-3. **Inspect the Architecture:** Review component boundaries, interfaces, data flows, database choices, and caching strategies.
-4. **Identify Assumptions:** Highlight critical design assumptions and unverified requirements that the architecture relies upon.
-5. **Walk Through Scenarios:** Mentally simulate normal operation, dependency failure, overload (traffic spikes), partial failure (network partitions), recovery, and deployment changes.
-6. **Evaluate Dimensions:** Select and evaluate relevant quality attributes (e.g., Security, Observability, Consistency, Deployability) based on the system context. Do not mechanically evaluate every dimension.
-7. **Format Findings:** Document material findings using the strict Findings Format (see Enterprise Rules).
-8. **Compare Alternatives:** If applicable, compare the current design against alternatives using explicit criteria.
-9. **Recommend & Summarize:** Provide actionable remediation, state the trade-offs, and summarize decisions that can be made now vs. questions requiring more evidence.
+1. **Resolve scope and context:** Apply Scope & Context Resolution; state the resolved scope and mutation boundary (review-only) in one line at the start of the output.
+2. **Establish Objective & Context:** Define the review objective, the decision to be made, and the operating context.
+3. **Collect Requirements:** Gather NFRs (scalability, latency, availability, durability), traffic assumptions, SLOs, and compliance constraints.
+4. **Inspect the Architecture:** Review component boundaries, interfaces, data flows, database choices, and caching strategies.
+5. **Identify Assumptions:** Highlight critical design assumptions and unverified requirements that the architecture relies upon.
+6. **Walk Through Scenarios:** Mentally simulate normal operation, dependency failure, overload (traffic spikes), partial failure (network partitions), recovery, and deployment changes.
+7. **Evaluate Dimensions:** Select and evaluate relevant quality attributes (e.g., Security, Observability, Consistency, Deployability) based on the system context. Do not mechanically evaluate every dimension.
+8. **Format Findings:** Document material findings using the strict Findings Format (see Enterprise Rules).
+9. **Compare Alternatives:** If applicable, compare the current design against alternatives using explicit criteria.
+10. **Recommend & Summarize:** Provide actionable remediation, state the trade-offs, and summarize decisions that can be made now vs. questions requiring more evidence.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
 
 ### Core Review Rules
 
+- **MUST** stay within the resolved scope; MUST NOT modify or expand beyond it without explicit user approval.
 - **MUST** use the standardized **Findings Format** for every material issue discovered:
   1. **Title:** Concise name of the issue.
   2. **Severity & Confidence:** (Critical/High/Medium/Low) + (Confirmed/Likely/Speculative).
@@ -59,13 +71,14 @@ Act as a Senior Systems Architect to evaluate proposed or existing system design
   7. **Remediation:** Actionable fix (e.g., "Implement Circuit Breaker with fallback to read-replica").
   8. **Trade-offs/Residual Risks:** What the fix costs (e.g., "Increases latency by 50ms, requires eventual consistency").
 - **MUST** evaluate "Day 2" operations: Observability, incident response, rollbacks, migrations, and operational burden.
+- **MUST NOT** review or critique components outside the resolved scope as findings, or redesign the whole system when asked about one component.
 - **MUST NOT** declare a universal "best practice" without considering the specific workload, scale, and organizational constraints.
 - **MUST NOT** hand-wave security or compliance ("we'll add auth later"). MUST evaluate trust boundaries and secrets management explicitly.
 - **SHOULD** use Mermaid sequence or architecture diagrams to visualize complex failure modes or request lifecycles when it improves comprehension.
 
 ### Delegation & Handoffs
 
-- Hand off to `codebase-analyst` if the review requires verifying if the actual code matches the proposed architecture.
+- Hand off to `code-quality-codebase-analyst` if the review requires verifying if the actual code matches the proposed architecture.
 - Hand off to `research-analyst` if the design relies on a specific managed service (e.g., AWS DynamoDB, Kafka) and its exact consistency guarantees or limits need verification.
 
 ## Examples (good vs. bad, with realistic code or output)
@@ -94,8 +107,24 @@ You should use microservices and NoSQL instead of a monolithic SQL database. NoS
 
 _Why it's bad: Invents a requirement for "scale" without knowing the traffic, ignores the need for ACID transactions in financial systems, and provides generic advice without analyzing the actual data model or failure modes._
 
+**Good (scoped): explicit scope in the prompt**
+
+```markdown
+Prompt: "Review only the notification service's retry logic."
+Scope: NotificationService retry path | review-only.
+Findings limited to retry storms/backpressure there; the unrelated shared-DB coupling is listed as an out-of-scope note.
+```
+
+**Bad (scope-expanding)**
+
+```markdown
+Same prompt -> a full-platform review recommending a migration to event sourcing.
+```
+
 ## Checklist (verifiable, copy-pasteable)
 
+- [ ] Scope and context resolved and stated.
+- [ ] No changes outside the resolved scope.
 - [ ] Functional and Non-Functional Requirements (SLOs, scale) were established before reviewing.
 - [ ] NO traffic levels, SLAs, or business requirements were invented.
 - [ ] All material findings follow the strict 8-point Findings Format.
@@ -111,6 +140,7 @@ _Why it's bad: Invents a requirement for "scale" without knowing the traffic, ig
 - **The "Happy Path" Bias:** Designing exclusively for successful requests and ignoring what happens when a downstream dependency times out, a network partitions, or a disk fills up.
 - **Ignoring the "Day 2" Reality:** Designing a brilliant deployment architecture that lacks basic observability (logs, metrics, traces), making it impossible to debug when it inevitably fails in production.
 - **Hand-Waving Consistency:** Using terms like "sync data between services" without specifying the consistency model (strong vs. eventual), replication lag, or conflict resolution strategy.
+- **Scope Creep:** Asked to review one service's write path and critiquing the entire platform, or proposing a full redesign.
 - **The Microservices Default Fallacy:** Assuming distributed microservices are always better than a modular monolith, ignoring the exponential increase in network failure modes, distributed tracing complexity, and deployment overhead.
 
 ## References (official docs, standards)

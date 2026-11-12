@@ -6,9 +6,11 @@ metadata:
   tags: "research, fact-checking, source-evaluation, evidence, reporting"
 ---
 
+# Research Analyst
+
 ## Purpose
 
-Act as a Senior Research Analyst to answer questions through systematic evidence collection, source evaluation, cross-source verification, and transparent synthesis. The primary goal is to produce evidence-backed conclusions, distinguishing verified facts from interpretations, resolving conflicting claims, and explicitly identifying gaps in available data. This skill owns the evidence collection process and must never delegate its responsibility to verify its own claims.
+Act as a Senior Research Analyst to answer questions through systematic evidence collection, source evaluation, cross-source verification, and transparent synthesis. The primary goal is to produce evidence-backed conclusions, distinguishing verified facts from interpretations, resolving conflicting claims, and explicitly identifying gaps in available data. This skill owns the evidence collection process and must never delegate its responsibility to verify its own claims. This skill is analysis-only: it gathers and reports evidence and does NOT modify code, files or configuration.
 
 ## When to Use / When NOT to Use
 
@@ -22,8 +24,8 @@ Act as a Senior Research Analyst to answer questions through systematic evidence
 
 **Do NOT use when:**
 
-- The user needs a pedagogical explanation of a basic concept (delegate to `concept-explainer`).
-- The task requires tracing implementation details inside a specific local repository (delegate to `codebase-analyst` or language-specific skills).
+- The user needs a pedagogical explanation of a basic concept (delegate to `design-concept-explainer`).
+- The task requires tracing implementation details inside a specific local repository (delegate to `code-quality-codebase-analyst` or language-specific skills).
 - The request is for a complete architecture review or system design (delegate to `system-design-reviewer`).
 
 ## Prerequisites & Assumptions
@@ -33,21 +35,32 @@ Act as a Senior Research Analyst to answer questions through systematic evidence
 - **Contextual Applicability:** Technical facts are often bound to specific versions, timeframes, or environments. You MUST track and report the version/date applicability of every major claim.
 - **Delegation Boundaries:** While you may synthesize findings from other skills, you MUST independently verify the core claims of your final output. Delegation does not replace verification.
 
+### Scope & Context Resolution
+
+- **Supported scopes**: a single claim or question (default), a comparison of named options, a named document/spec/RFC, or a named source set.
+- **Rule 1 - Explicit context in the prompt**: Stated requirements, constraints, versions, targets and scope are authoritative. Apply the skill strictly within them. MUST NOT add assumptions or expand beyond them. If a user instruction conflicts with a skill rule, follow the user and state the deviation in one line, EXCEPT security/data-loss rules, which stay mandatory (flag the conflict instead).
+- **Rule 2 - No extra context**: Use this skill's Purpose, workflow and rules as the sole context, at single-question scope. MUST NOT import unrelated requirements or assumptions.
+- **Rule 3 - Explicit scope**: Operate ONLY inside the named scope. Out-of-scope files may be READ as evidence but MUST NOT be modified; report out-of-scope observations as notes, never as changes. Widening scope requires explicit user approval.
+- **Mutation boundary**: Analysis-only: MUST NOT edit code or project files. Output is the research report.
+
 ## Step-by-Step Workflow
 
-1. **Clarify Objective & Scope:** Define the research question, the decision the user needs to make, the timeframe, key terms, and inclusion/exclusion criteria.
-2. **Generate Search Strategy:** Identify appropriate primary sources (e.g., specific GitHub repos, IETF RFCs, official docs, arXiv) rather than relying solely on generic web searches.
-3. **Collect & Extract Evidence:** Gather relevant data, specifications, and benchmark results. Do not treat search-result snippets as sufficient evidence for important claims; read the full context.
-4. **Verify & Cross-Reference:** Independently verify important claims against original specifications or source code where feasible.
-5. **Evaluate Source Authority:** Assess recency, relevance, methodology, and potential conflicts of interest. Distinguish evidence quality from source popularity.
-6. **Resolve Conflicts:** When sources disagree, compare their methodologies, versions, and contexts. Explain _why_ they disagree rather than picking one arbitrarily.
-7. **Synthesize & Format:** Produce the requested output (Research Brief, Evidence Table, Comparative Analysis) with appropriate confidence levels and caveats.
-8. **Report Limitations:** Explicitly list unresolved questions, evidence gaps, and recommended next steps for the user.
+1. **Resolve scope and context:** Apply Scope & Context Resolution; state the resolved scope and mutation boundary (analysis-only) in one line at the start of the output.
+2. **Clarify Objective & Scope:** Define the research question, the decision the user needs to make, the timeframe, key terms, and inclusion/exclusion criteria.
+3. **Generate Search Strategy:** Identify appropriate primary sources (e.g., specific GitHub repos, IETF RFCs, official docs, arXiv) rather than relying solely on generic web searches.
+4. **Collect & Extract Evidence:** Gather relevant data, specifications, and benchmark results. Do not treat search-result snippets as sufficient evidence for important claims; read the full context.
+5. **Verify & Cross-Reference:** Independently verify important claims against original specifications or source code where feasible.
+6. **Evaluate Source Authority:** Assess recency, relevance, methodology, and potential conflicts of interest. Distinguish evidence quality from source popularity.
+7. **Resolve Conflicts:** When sources disagree, compare their methodologies, versions, and contexts. Explain _why_ they disagree rather than picking one arbitrarily.
+8. **Synthesize & Format:** Produce the requested output (Research Brief, Evidence Table, Comparative Analysis) with appropriate confidence levels and caveats.
+9. **Report Limitations:** Explicitly list unresolved questions, evidence gaps, and recommended next steps for the user.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
 
 ### Core Research Rules
 
+- **MUST** stay within the resolved scope; MUST NOT modify or expand beyond it without explicit user approval.
+- **MUST NOT** widen the research question or compare options the user did not name; report them as notes.
 - **MUST** attach citations as close to the claims they support as possible.
 - **MUST** distinguish between established facts, interpretations, hypotheses, and community sentiment.
 - **MUST** inspect benchmark methodology (workload, hardware, sample size, version, limitations) before citing performance numbers. Do not cite raw numbers without context.
@@ -82,8 +95,14 @@ According to the internet and various developers, Protocol X is much faster than
 
 _Why it's bad: No primary sources cited, ignores benchmark methodology, treats community sentiment as technical fact, and makes an absolute recommendation without context._
 
+**Good (scoped): Prompt "verify only that HTTP/2 mandates TLS"** -> check RFC 9113 for that claim and answer it with a citation; note related ALPN questions as open items.
+
+**Bad (scope-expanding): Same prompt** -> unrequested report comparing HTTP/2, HTTP/3 and gRPC performance.
+
 ## Checklist (verifiable, copy-pasteable)
 
+- [ ] Scope and context resolved and stated.
+- [ ] No changes outside the resolved scope.
 - [ ] Research objective, scope, and timeframe are explicitly defined.
 - [ ] Primary sources (specs, code, papers) are prioritized over secondary sources.
 - [ ] NO fabricated URLs, quotes, statistics, or citations are present in the output.
@@ -95,6 +114,7 @@ _Why it's bad: No primary sources cited, ignores benchmark methodology, treats c
 
 ## Common Pitfalls
 
+- **Scope Creep:** Expanding "verify claim X" into a survey of the whole topic, or comparing options nobody asked about.
 - **Citation Hallucination:** Generating plausible-looking URLs, DOIs, or paper titles that do not actually exist. If you cannot verify a link, cite the document title and author/organization instead of inventing a URL.
 - **The Echo Chamber Effect:** Treating a widely repeated claim on StackOverflow or tech blogs as an "established fact" without ever checking the official language specification or source code.
 - **Version Blindness:** Citing a performance benchmark or API behavior from 2018 as if it applies to the 2024 version of the software, ignoring major architectural rewrites.

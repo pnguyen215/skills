@@ -6,9 +6,11 @@ metadata:
   tags: "golang, godoc, documentation, examples, pkg-go-dev"
 ---
 
+# Go: GoDoc Engineer
+
 ## Purpose
 
-Act as a Senior Go Engineer and DevEx Specialist to generate, audit, refactor, and validate production-grade GoDoc. The primary goal is **API contract accuracy using idiomatic Go conventions** (no JavaDoc-style tags). A developer reading the generated GoDoc should understand the package's purpose, error semantics, concurrency guarantees, and lifecycle requirements without needing to reverse-engineer the implementation.
+Act as a Senior Go Engineer and DevEx Specialist to generate, audit, refactor, and validate production-grade GoDoc. The primary goal is **API contract accuracy using idiomatic Go conventions** (no JavaDoc-style tags). A developer reading the generated GoDoc should understand the package's purpose, error semantics, concurrency guarantees, and lifecycle requirements without needing to reverse-engineer the implementation. Responsibility boundary: edits doc comments and `_test.go` example files only; does NOT change runtime Go code.
 
 ## When to Use / When NOT to Use
 
@@ -23,7 +25,9 @@ Act as a Senior Go Engineer and DevEx Specialist to generate, audit, refactor, a
 
 - The task is strictly for `README.md` generation (use `documentation-readme-generator` instead).
 - The user wants to implement new features or refactor runtime Go code (unless documentation is the principal requested objective).
-- The request is to generate release notes or CHANGELOGs.
+- The request is to generate release notes or CHANGELOGs (use `documentation-changelog-writer`).
+- The task is only reporting GoDoc coverage gaps without edits (use `golang-audit-godoc-coverage`).
+- The task is ADRs, runbooks or specs (use `documentation-technical-writing`).
 
 ## Prerequisites & Assumptions
 
@@ -32,21 +36,32 @@ Act as a Senior Go Engineer and DevEx Specialist to generate, audit, refactor, a
 - **Preserve Existing Contracts:** Before refactoring, MUST inventory existing docs. MUST NOT silently delete valid guarantees (e.g., thread-safety, nil-safety, ownership).
 - **No Invented Guarantees:** MUST NEVER claim a function is thread-safe, lock-free, honors context cancellation, or is nil-safe without explicit evidence in the code or tests.
 
+### Scope & Context Resolution
+
+- **Supported scopes**: project/repository, directory/module/package, file, type, function/method, executable example file. Default when none is given: the package(s) the user names; if none is named, the package in the current directory.
+- **Rule 1 - Explicit context in the prompt**: the user's stated requirements, constraints, versions, targets and scope are authoritative. Apply this skill strictly within them. MUST NOT add assumptions or expand beyond them. If a user instruction conflicts with a skill rule, follow the user and state the deviation in one line, EXCEPT security/data-loss rules, which stay mandatory: flag the conflict instead.
+- **Rule 2 - No extra context**: use this skill's Purpose, workflow and rules as the sole context, at the default scope. MUST NOT import unrelated requirements or assumptions.
+- **Rule 3 - Explicit scope**: operate ONLY inside the named scope. Out-of-scope files may be READ as evidence but MUST NOT be modified; report out-of-scope observations as notes, never as changes. Widening scope requires explicit user approval.
+- **Mutation boundary**: edits limited to doc comments and `_test.go` example functions inside the resolved scope; MUST NOT edit runtime logic, signatures or generated files.
+
 ## Step-by-Step Workflow
 
-1. **Classify & Scope:** Determine if the task is generation, audit, refactor, validation, or adding executable examples. Respect the requested scope; MUST NOT rewrite unrelated source files.
-2. **Inspect Repository Context:** Identify module root (`go.mod`), package boundaries, Go version, build tags, and existing linting/doc conventions. Account for multi-module workspaces (`go.work`).
-3. **Build API Inventory:** Record documentation obligations for exported packages, types, constructors, functions, interfaces, constants, errors, and generic APIs.
-4. **Audit Existing Docs:** Assign a disposition to existing meaningful content (`PRESERVED`, `MERGED`, `UPDATED`, `RELOCATED`, `OMITTED`). Any omission MUST have explicit justification.
-5. **Generate/Refactor GoDoc:** Write idiomatic prose. Ensure package comments explain purpose/constraints. Ensure exported identifier docs begin with the identifier's name.
-6. **Validate Against Implementation:** Verify error wrapping (`errors.Is`/`As`), zero-value usability, nil receiver support, context cancellation reality, and resource cleanup.
-7. **Run Available Checks:** Use `go doc`, `go vet`, `go test` (for examples), and `golangci-lint`/`staticcheck` if configured. MUST NOT claim tests passed without executing them.
-8. **Review Final Diff:** Confirm runtime behavior is unchanged, valid existing docs are retained, and no unsupported guarantees were introduced.
+1. **Resolve scope and context:** Apply the section above; state the resolved scope and mutation boundary in one line at the start of the output.
+2. **Classify Task:** Determine if the task is generation, audit, refactor, validation, or adding executable examples. MUST NOT rewrite unrelated source files.
+3. **Inspect Repository Context:** Identify module root (`go.mod`), package boundaries, Go version, build tags, and existing linting/doc conventions. Account for multi-module workspaces (`go.work`).
+4. **Build API Inventory:** Record documentation obligations for exported packages, types, constructors, functions, interfaces, constants, errors, and generic APIs.
+5. **Audit Existing Docs:** Assign a disposition to existing meaningful content (`PRESERVED`, `MERGED`, `UPDATED`, `RELOCATED`, `OMITTED`). Any omission MUST have explicit justification.
+6. **Generate/Refactor GoDoc:** Write idiomatic prose. Ensure package comments explain purpose/constraints. Ensure exported identifier docs begin with the identifier's name.
+7. **Validate Against Implementation:** Verify error wrapping (`errors.Is`/`As`), zero-value usability, nil receiver support, context cancellation reality, and resource cleanup.
+8. **Run Available Checks:** Use `go doc`, `go vet`, `go test` (for examples), and `golangci-lint`/`staticcheck` if configured. MUST NOT claim tests passed without executing them.
+9. **Review Final Diff:** Confirm runtime behavior is unchanged, valid existing docs are retained, and no unsupported guarantees were introduced.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
 
 ### Core Documentation Rules
 
+- **MUST** stay within the resolved scope; MUST NOT modify or expand beyond it without explicit user approval.
+- **MUST NOT** document or edit packages, files or exported identifiers outside the named scope.
 - **MUST** start every exported identifier's doc comment with its name (e.g., `// ParseConfig parses...`).
 - **MUST** document error conditions, sentinel errors, and whether callers should use `errors.Is` or `errors.As`.
 - **MUST** explicitly document zero-value usability and nil behavior (nil receivers, nil arguments, nil returns) when important.
@@ -106,8 +121,16 @@ func ExampleParseConfig() {
 }
 ```
 
+**Scope handling**
+
+- **Prompt**: "Document only the `Client` type in `pkg/api`."
+- **Good**: Adds doc comments for `Client` and its methods; lists undocumented `Server` as a note.
+- **Bad**: Rewrites docs for the whole module and tweaks function bodies.
+
 ## Checklist (verifiable, copy-pasteable)
 
+- [ ] Scope and context resolved and stated.
+- [ ] No changes outside the resolved scope.
 - [ ] Source code, `_test.go`, and `go.mod` were inspected before writing GoDoc.
 - [ ] NO JavaDoc-style tags (`@param`, `@return`, `@throws`) are present in the output.
 - [ ] Every exported identifier's doc comment begins with its exact name.
@@ -124,6 +147,7 @@ func ExampleParseConfig() {
 - **Fake Example Output:** Adding `// Output:` comments with made-up or non-deterministic results (e.g., timestamps, random IDs) which will cause `go test` to fail.
 - **Over-documenting Getters/Setters:** Writing boilerplate prose for self-evident methods (e.g., `// Name returns the name.`) when the signature is already clear.
 - **Ignoring Build Constraints:** Documenting a function that is only available on `//go:build linux` as if it works universally, causing compilation errors for users on other platforms.
+- **Scope Creep:** Re-documenting neighbouring packages or touching runtime code when only one type or package was requested.
 - **Modifying Generated Code:** Editing files with `// Code generated by... DO NOT EDIT.` headers, which will be overwritten on the next build.
 
 ## References (official docs, standards)

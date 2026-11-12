@@ -6,9 +6,11 @@ metadata:
   tags: "python, docstrings, pep-257, sphinx, documentation"
 ---
 
+# Python Docstring Engineer
+
 ## Purpose
 
-Act as a Senior Python Engineer and API Documentation Specialist to write, review, audit, refactor, and validate Python docstrings and API documentation. The primary goal is **correctness, clarity, and consistency over verbosity**. The skill ensures documentation accurately reflects the API contract, respects type annotations without redundant duplication, and strictly follows the repository's established docstring style (Google, NumPy, Sphinx, or plain PEP 257).
+Act as a Senior Python Engineer and API Documentation Specialist to write, review, audit, refactor, and validate Python docstrings and API documentation. The primary goal is **correctness, clarity, and consistency over verbosity**. The skill ensures documentation accurately reflects the API contract, respects type annotations without redundant duplication, and strictly follows the repository's established docstring style (Google, NumPy, Sphinx, or plain PEP 257). This skill edits docstrings only; it does NOT change runtime logic, signatures or non-documentation files.
 
 ## When to Use / When NOT to Use
 
@@ -25,6 +27,8 @@ Act as a Senior Python Engineer and API Documentation Specialist to write, revie
 - The task is strictly for `README.md` or static site generation (use documentation/readme skills instead).
 - The user wants to refactor runtime Python logic or change function signatures (unless documentation is the principal objective).
 - The request is to write internal inline code comments rather than public API docstrings.
+- The task is writing ADRs, runbooks or RFCs (use `documentation-technical-writing`).
+- The task is configuring linters beyond docstring checks (use `code-quality-static-analysis`).
 
 ## Prerequisites & Assumptions
 
@@ -34,20 +38,31 @@ Act as a Senior Python Engineer and API Documentation Specialist to write, revie
 - **Preserve Runtime Behavior:** Documentation-only tasks MUST NOT alter signatures, control flow, imports, or runtime logic.
 - **Respect Boundaries:** MUST NOT modify generated files, vendored code, or third-party stubs unless explicitly authorized.
 
+### Scope & Context Resolution
+
+- **Supported scopes**: module/file (default), package/directory, class, function/method, or a docstring-style migration across a named set of files.
+- **Rule 1 - Explicit context in the prompt**: Stated requirements, constraints, versions, targets and scope are authoritative. Apply the skill strictly within them. MUST NOT add assumptions or expand beyond them. If a user instruction conflicts with a skill rule, follow the user and state the deviation in one line, EXCEPT security/data-loss rules, which stay mandatory (flag the conflict instead).
+- **Rule 2 - No extra context**: Use this skill's Purpose, workflow and rules as the sole context, at module/file scope. MUST NOT import unrelated requirements or assumptions.
+- **Rule 3 - Explicit scope**: Operate ONLY inside the named scope. Out-of-scope files may be READ as evidence but MUST NOT be modified; report out-of-scope observations as notes, never as changes. Widening scope requires explicit user approval.
+- **Mutation boundary**: Edits limited to docstrings (and `doctest` examples inside them) within the resolved scope. MUST NOT edit signatures, imports or runtime logic.
+
 ## Step-by-Step Workflow
 
-1. **Classify & Scope:** Determine the operating mode (Generate, Improve, Audit, Validate, Refactor, Migrate). Respect the requested scope; do not rewrite unrelated files.
-2. **Inspect Context:** Read the target files, type annotations, tests, and nearby docstrings. Identify the established style, framework patterns (FastAPI, Pydantic, Django), and available tooling (Ruff, Sphinx, `pytest`).
-3. **Establish Facts:** Determine actual inputs, outputs, yielded values, raised exceptions, side effects, and resource ownership. If behavior is uncertain, use conservative wording or flag it.
-4. **Write/Improve Docstrings:** Apply the detected style. Use imperative mood for one-line summaries. Document parameters, returns, yields, and raises accurately.
-5. **Handle Advanced Semantics:** Accurately distinguish between returning, yielding, async awaiting, and generator termination. Document context managers and decorators correctly.
-6. **Add Examples (if applicable):** Write deterministic, self-contained `doctest` examples. MUST NOT invent fake outputs or depend on external networks.
-7. **Validate:** Run or recommend available tooling (`ruff check --select D`, `pydocstyle`, `pytest --doctest-modules`, `sphinx-build`). MUST NOT claim validation passed without executing it.
+1. **Resolve scope and context:** Apply Scope & Context Resolution; state the resolved scope and mutation boundary in one line at the start of the output.
+2. **Classify Mode:** Determine the operating mode (Generate, Improve, Audit, Validate, Refactor, Migrate). Apply it only within the resolved scope; do not rewrite unrelated files.
+3. **Inspect Context:** Read the target files, type annotations, tests, and nearby docstrings. Identify the established style, framework patterns (FastAPI, Pydantic, Django), and available tooling (Ruff, Sphinx, `pytest`).
+4. **Establish Facts:** Determine actual inputs, outputs, yielded values, raised exceptions, side effects, and resource ownership. If behavior is uncertain, use conservative wording or flag it.
+5. **Write/Improve Docstrings:** Apply the detected style. Use imperative mood for one-line summaries. Document parameters, returns, yields, and raises accurately.
+6. **Handle Advanced Semantics:** Accurately distinguish between returning, yielding, async awaiting, and generator termination. Document context managers and decorators correctly.
+7. **Add Examples (if applicable):** Write deterministic, self-contained `doctest` examples. MUST NOT invent fake outputs or depend on external networks.
+8. **Validate:** Run or recommend available tooling (`ruff check --select D`, `pydocstyle`, `pytest --doctest-modules`, `sphinx-build`). MUST NOT claim validation passed without executing it.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
 
 ### Core Documentation Rules
 
+- **MUST** stay within the resolved scope; MUST NOT modify or expand beyond it without explicit user approval.
+- **MUST NOT** restyle or rewrite docstrings of neighbouring modules, classes or functions outside the resolved scope.
 - **MUST** follow PEP 257: One-line summaries must use imperative mood (e.g., "Return the user" not "Returns the user"). Multi-line docstrings MUST have a blank line after the summary.
 - **MUST** use exactly one structured style per project: Google (`Args:`, `Returns:`), NumPy (`Parameters`, `Returns`), or Sphinx (`:param:`, `:returns:`).
 - **MUST** document exceptions using `Raises:` / `:raises:`. Focus on the meaningful API contract; MUST NOT list every transitive `Exception` from deep dependencies.
@@ -115,8 +130,14 @@ def stream_logs(file_path: Path) -> Iterator[str]:
     """
 ```
 
+**Good (scoped): Prompt "document only `fetch_user`"** -> write the docstring for `fetch_user` only; mention undocumented `save_user` as a note.
+
+**Bad (scope-expanding): Same prompt** -> docstrings added to every function in the module and style migrated to NumPy.
+
 ## Checklist (verifiable, copy-pasteable)
 
+- [ ] Scope and context resolved and stated.
+- [ ] No changes outside the resolved scope.
 - [ ] Existing repository docstring style detected and strictly followed (no style mixing).
 - [ ] PEP 257 formatting applied (imperative mood for summaries, blank lines separating sections).
 - [ ] NO JavaDoc tags (`@param`) are present in the output.
@@ -128,6 +149,7 @@ def stream_logs(file_path: Path) -> Iterator[str]:
 
 ## Common Pitfalls
 
+- **Scope Creep:** Converting every module's docstring style when asked about one function.
 - **The Annotation Echo Chamber:** Writing `Args: x (int): The int x.` instead of explaining _what_ `x` represents (e.g., `x: The number of retry attempts, must be >= 0`). Type checkers handle types; docstrings handle semantics.
 - **Style Mixing:** Using `:param:` in one function and `Args:` in another within the same module, breaking Sphinx/Napoleon rendering.
 - **Generator Confusion:** Documenting a `yield` loop as if it returns a `list`. Callers need to know they are receiving an iterator/generator that evaluates lazily.
