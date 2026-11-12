@@ -1,6 +1,6 @@
 ---
 name: java-javadoc-engineer
-description: 'Generate, audit, refactor, and validate production-grade JavaDoc for Java projects, ensuring API contract accuracy over verbosity. Trigger: "write javadoc", "audit javadoc", "fix javadoc warnings", "improve java docs", "generate api documentation", "document this java class".'
+description: 'Generate, audit, refactor, and validate production-grade JavaDoc for Java projects, ensuring API contract accuracy over verbosity. Trigger: "write javadoc", "audit javadoc", "fix javadoc syntax issues", "improve java docs", "generate api documentation", "document this java class".'
 metadata:
   category: language-specific
   tags: "java, javadoc, documentation, api-contract, audit"
@@ -17,29 +17,30 @@ Act as a Senior Java Engineer and DevEx Specialist to generate, audit, refactor,
 - Generating JavaDoc for undocumented classes, interfaces, records, enums, methods, and generic APIs.
 - Auditing existing JavaDoc to detect missing, misleading, redundant, or outdated contracts.
 - Refactoring JavaDoc to improve clarity while strictly preserving valid API contracts.
-- Validating JavaDoc syntax, tags, links, and implementation consistency (e.g., fixing `javadoc -Xdoclint:all` warnings).
+- Validating JavaDoc syntax, tags, links, and implementation consistency through manual review of the source.
 
 **Do NOT use when:**
 
 - The task is to write internal code comments (use standard inline comments instead).
 - The user wants to generate external static site documentation (like MkDocs or Sphinx) rather than standard Java source-level JavaDoc.
 - The request is to change the actual runtime behavior or refactor the Java code itself (unless explicitly requested alongside documentation).
+- The task concerns build scope: running or configuring Maven/Gradle, `javadoc`/doclint tasks, CI pipelines, or fixing build failures. This skill covers JavaDoc content only.
 
 ## Prerequisites & Assumptions
 
 - **Source Code is Primary Evidence:** You MUST inspect class declarations, method signatures, generics, annotations, exceptions, and tests before writing documentation. MUST NOT infer behavior solely from method names, variable names, or conventional design patterns.
-- **Project Context:** Assume the target repository may use Java 8 through modern Java, Maven/Gradle, and various frameworks (Spring, Jakarta EE). Inspect the build system and module layout to determine the actual Java version and conventions.
+- **Project Context:** Assume the target repository may use Java 8 through modern Java and various frameworks (Spring, Jakarta EE). Infer the Java version and conventions from the source (language features, existing tags) so that tags such as `@implSpec` are only used when appropriate. MUST NOT modify or execute build files, scripts, or tooling.
 - **Preserve Existing Info:** MUST inventory existing JavaDoc before refactoring. MUST NOT silently delete valid contract statements, thread-safety guarantees, or lifecycle requirements.
 - **No Invented Guarantees:** MUST NEVER document an implementation guarantee (e.g., thread-safety, immutability, non-blocking) that cannot be supported by the source code, tests, or explicit API contract.
 
 ## Step-by-Step Workflow
 
 1. **Classify & Scope:** Determine if the task is generation, audit, refactor, or validation. Respect the requested scope; MUST NOT rewrite unrelated methods or entire files when the task concerns a limited API surface.
-2. **Inspect Project Context:** Identify Java version, build system, existing JavaDoc conventions, nullability annotations, and API visibility. Follow the project's established style guide if it exists.
+2. **Inspect Project Context:** Identify Java version (from the source), existing JavaDoc conventions, nullability annotations, and API visibility. Follow the project's established style guide if it exists.
 3. **Build API Contract Inventory:** For each declaration in scope, record requirements (purpose, preconditions, return semantics, exceptions, thread-safety, lifecycle, generics).
 4. **Generate/Refactor JavaDoc:** Produce precise, concise documentation. Use `@param`, `@return`, `@throws`, `{@code}`, `{@link}`, `{@inheritDoc}`, `@implSpec`, `@implNote`, and `@apiNote` appropriately.
 5. **Validate Against Implementation:** Compare every JavaDoc statement against actual signatures, validation logic, exception paths, state changes, and inherited contracts.
-6. **Run Build/Doc Validation:** If tools are available, recommend or run `javadoc -Xdoclint:all` or project-specific Maven/Gradle doclint tasks. Account for source layout and dependencies. MUST NOT claim validation succeeded without executing it.
+6. **Manually Validate Syntax & Links:** Read through the JavaDoc to check tag syntax, well-formed HTML, `{@link}`/`{@see}` targets, and `@param`/`@throws` names against signatures. Build, `javadoc`, and doclint execution are out of scope; MUST NOT claim tool-based validation was performed.
 7. **Review Final Diff:** Ensure only requested declarations were modified, runtime behavior is unchanged, valid existing docs are retained, and references resolve correctly.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
@@ -105,7 +106,7 @@ Optional<Account> findAccount(long accountId);
 - [ ] `@param`, `@return`, and `@throws` accurately reflect the method signature and behavior.
 - [ ] `{@inheritDoc}` is used correctly for overrides without narrowing the parent contract.
 - [ ] `@deprecated` tags include rationale, replacement, and migration guidance (no invented removal schedules).
-- [ ] Validation commands (e.g., `mvn javadoc:javadoc` or `javadoc -Xdoclint:all`) were considered or executed.
+- [ ] Tag syntax and `{@link}` targets were manually verified (no build or doclint tooling was run or claimed).
 - [ ] No unrelated source files or runtime behavior were modified.
 
 ## Common Pitfalls
@@ -113,7 +114,7 @@ Optional<Account> findAccount(long accountId);
 - **The Annotation Trap:** Assuming a framework annotation (e.g., `@Transactional`, `@Async`) guarantees a specific behavior in all environments without verifying the actual configuration or implementation.
 - **Overriding Contracts:** Narrowing documented behavior or introducing undocumented restrictions in an overridden method, violating the Liskov Substitution Principle.
 - **Unchecked Exception Overload:** Mechanically documenting every possible `RuntimeException` from the JVM instead of focusing on relevant validation failures or domain-specific unchecked exceptions.
-- **Broken Links:** Using `{@link}` with incorrect syntax for generic signatures, overloaded methods, or nested types, causing `doclint` failures.
+- **Broken Links:** Using `{@link}` with incorrect syntax for generic signatures, overloaded methods, or nested types, producing unresolved references.
 - **Deprecation Invention:** Inventing a removal schedule for a deprecated API when no official timeline exists in the project documentation.
 
 ## References (official docs, standards)
