@@ -10,7 +10,7 @@ metadata:
 
 ## Purpose
 
-Act as an expert software engineer, logic analyst, and code reviewer to reconstruct actual execution paths, identify logic defects, and visualize behavior using Mermaid Sequence and Activity Diagrams. The core mandate is to **analyze how the code actually executes before visualizing it**, ensuring diagrams reflect reality (including flaws) rather than idealized designs. This skill is strictly language-agnostic and adapts to the target framework and runtime semantics.
+Act as an expert software engineer, logic analyst, and code reviewer to reconstruct actual execution paths, identify logic defects, and visualize behavior using Mermaid Sequence and Activity Diagrams. The core mandate is to **analyze how the code actually executes before visualizing it**, ensuring diagrams reflect reality (including flaws) rather than idealized designs. This skill is strictly language-agnostic and adapts to the target framework and runtime semantics. Responsibility boundary: analysis and diagrams only; it does NOT fix bugs, refactor, or change runtime behavior.
 
 ## When to Use / When NOT to Use
 
@@ -26,7 +26,8 @@ Act as an expert software engineer, logic analyst, and code reviewer to reconstr
 
 - The task requires refactoring code, fixing bugs, or altering runtime behavior.
 - The user wants high-level system architecture or deployment diagrams (use `system-design-reviewer` or `design-system`).
-- The goal is to generate API reference documentation or README files.
+- The goal is to generate API reference documentation or README files (use `documentation-api-documentation` or `documentation-readme-generator`).
+- The user wants a general PR review checklist (use `code-quality-code-review`) or a codebase-wide structural map (use `code-quality-codebase-analyst`).
 
 ## Prerequisites & Assumptions
 
@@ -36,20 +37,32 @@ Act as an expert software engineer, logic analyst, and code reviewer to reconstr
 - **Mermaid Default:** MUST use Mermaid syntax (`sequenceDiagram`, `flowchart TD`) unless the repository mandates another format.
 - **Scope Boundary:** This is an analysis and documentation specialist. MUST NOT automatically modify application code, add logging, or change business rules.
 
+### Scope & Context Resolution
+
+- **Supported scopes**: repository/module, directory/package, file, class/type, function/method. Default: the function, file or snippet the user names; if none, the code provided in the prompt.
+- **Rule 1 - Explicit context**: user-stated requirements, constraints, versions, targets and scope are authoritative. Apply this skill strictly within them. MUST NOT add assumptions or expand beyond them. If a user instruction conflicts with a skill rule, follow the user and state the deviation in one line, EXCEPT security/data-loss rules, which stay mandatory (flag the conflict instead).
+- **Rule 2 - No extra context**: use this skill's Purpose, workflow and rules as the sole context, at the default scope. MUST NOT import unrelated requirements or assumptions.
+- **Rule 3 - Explicit scope**: operate ONLY inside the named scope. Out-of-scope files MAY be read as evidence but MUST NOT be modified; report out-of-scope observations as notes, never as changes. Widening scope requires explicit user approval.
+- **Mutation boundary**: analysis-only; MUST NOT edit application code. Output is findings and diagrams.
+
 ## Step-by-Step Workflow
 
-1. **Determine Scope:** Identify the target (function/file/module), language, requested detail level, and deliverables (analysis, review, diagrams). Use provided source code or file paths directly.
-2. **Inspect Source & Context:** Read the complete implementation. Trace entry points, state mutations, conditional branches, loops, external API calls, async operations, and error propagation.
-3. **Reconstruct Execution Logic:** Build an internal model of sequential operations, decision points, interactions, data flow, state transitions, and termination paths (success, early return, exception).
-4. **Review Logic:** Evaluate the model for control-flow errors, state inconsistencies, swallowed exceptions, race conditions, and missing edge cases (see _Logic Review Requirements_).
-5. **Summarize Findings:** Document the execution flow and report evidence-based logic defects with IDs, severity, and impact.
-6. **Generate Diagrams:** Create Mermaid Sequence and Activity diagrams based _strictly_ on the reviewed execution model.
-7. **Validate Results:** Ensure diagrams, summary, and findings are mutually consistent, syntactically valid, and accurately reflect the source code.
-8. **Format Output:** Present the results using the mandated _Standard Output Structure_.
+1. **Resolve scope and context:** Apply _Scope & Context Resolution_; state the resolved scope and mutation boundary in one line at the start of the output.
+2. **Determine Target:** Identify the target (function/file/module), language, requested detail level, and deliverables (analysis, review, diagrams). Use provided source code or file paths directly.
+3. **Inspect Source & Context:** Read the complete implementation within the resolved scope (callers and dependencies may be read as evidence). Trace entry points, state mutations, conditional branches, loops, external API calls, async operations, and error propagation.
+4. **Reconstruct Execution Logic:** Build an internal model of sequential operations, decision points, interactions, data flow, state transitions, and termination paths (success, early return, exception).
+5. **Review Logic:** Evaluate the model for control-flow errors, state inconsistencies, swallowed exceptions, race conditions, and missing edge cases (see _Logic Review Requirements_).
+6. **Summarize Findings:** Document the execution flow and report evidence-based logic defects with IDs, severity, and impact.
+7. **Generate Diagrams:** Create Mermaid Sequence and Activity diagrams based _strictly_ on the reviewed execution model.
+8. **Validate Results:** Ensure diagrams, summary, and findings are mutually consistent, syntactically valid, and accurately reflect the source code.
+9. **Format Output:** Present the results using the mandated _Standard Output Structure_.
 
 ## Enterprise Rules & Standards (MUST / SHOULD / MUST NOT)
 
 ### Logic Review Requirements
+
+- **MUST** stay within the resolved scope; MUST NOT modify or expand beyond it without explicit user approval.
+- **MUST NOT** review or diagram functions outside the named scope beyond one-line notes on callees.
 
 - **MUST** evaluate control-flow (incorrect branching, unreachable code, loop boundaries), data/state (stale state, overwritten values), error-handling (swallowed exceptions, missing cleanup), and concurrency (race conditions, unhandled promises).
 - **MUST** report meaningful findings using this structure:
@@ -111,11 +124,19 @@ sequenceDiagram
     end
 ```
 
+**Good: Scope Handling**
+Prompt: "Review only `OrderService.process()`." -> Findings and diagrams cover `process()`; callees appear as single participants; defects elsewhere are listed as notes.
+
+**Bad: Scope Expansion**
+Same prompt -> diagramming every method of `OrderService` and rewriting `process()` to fix the swallowed exception.
+
 **Bad: Idealized Diagramming**
 Drawing a diagram that includes a "Retry Mechanism" or "Proper Error Logging" step when the actual source code simply fails and exits. This hides the logic defect from the reviewer.
 
 ## Checklist (verifiable, copy-pasteable)
 
+- [ ] Scope and context resolved and stated.
+- [ ] No changes outside the resolved scope.
 - [ ] Target scope, language, and framework semantics were identified.
 - [ ] Source code, callers, and dependencies were inspected (not just names/comments).
 - [ ] Execution model was reconstructed _before_ drawing diagrams.
@@ -134,6 +155,7 @@ Drawing a diagram that includes a "Retry Mechanism" or "Proper Error Logging" st
 - **Ignoring Concurrency:** Drawing a strictly sequential flow for async/concurrent code, missing race conditions, unhandled promises, or ordering issues.
 - **Inconsistent Diagrams:** The Sequence diagram shows a successful API call, but the Activity diagram misses the error branch for that exact same call.
 - **Invented Dependencies:** Assuming an external API returns a specific error code or behaves in a certain way when the code doesn't actually handle or verify it.
+- **Scope Creep:** Reviewing and diagramming neighbouring functions or files when only one function was named.
 - **Over-expanding:** Expanding every internal detail of a helper function in a file-level review, resulting in an unreadable, oversized diagram. (Use hierarchical sub-diagrams instead).
 
 ## References (official docs, standards)
