@@ -27,11 +27,11 @@ Think like an architect designing instructions for an autonomous AI agent, not s
 
 # INPUT (from the end user)
 
-skill_file: {{skill_file|}} # path or content of the existing SKILL.md
+skill_file: {{skill_file|SKILL.md}} # path or content of the existing SKILL.md
 
 target_agents: {{target_agents|Claude Code, Codex, Cursor}} # target AI coding agents
 
-optimization_level: {{optimization_level|comprehensive}} # one of: minimal | balanced | comprehensive
+optimization_level: {{optimization_level|comprehensive, balanced, minimal}} # one of: minimal | balanced | comprehensive
 
 preserve_existing_behavior: {{preserve_existing_behavior|true}} # preserve the original skill's intended capabilities and behavior
 

@@ -24,7 +24,7 @@ target: {{target|}} # file path, function name(s), module name(s), or empty when
 
 comment_language: {{comment_language|English}} # language used for comments
 
-detail_level: {{detail_level|detailed}} # one of: concise | detailed | comprehensive
+detail_level: {{detail_level|detailed, comprehensive, concise}} # one of: concise | detailed | comprehensive
 
 Scope rules:
 
