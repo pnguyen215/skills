@@ -24,7 +24,7 @@ target: {{target|}} # file path, function name(s), module name(s), or empty when
 
 language: {{language|English}} # language used for logging messages
 
-detail_level: {{detail_level|detailed}} # one of: concise | detailed
+detail_level: {{detail_level|detailed, concise}} # one of: concise | detailed
 
 Scope rules:
 
