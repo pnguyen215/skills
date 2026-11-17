@@ -80,3 +80,4 @@ testing-unit-testing: testing, unit-testing, tdd, mocking, first-principles
 shell-shdoc-engineer: bash, shell, documentation, posix, comments, technical-writing
 
 skill-optimizer: prompt-engineering, optimization, agent-skills, performance
+documentation-code-deep-dive: code-documentation, inline-comments, code-analysis, comments, mentoring, behavior-preserving
