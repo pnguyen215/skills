@@ -313,6 +313,7 @@ Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded 
 | `observability`     | `observability-logging`             | `observability`, `logging`, `structured-logging`, `correlation-id`, `pii`                                |
 | `observability`     | `observability-metrics`             | `observability`, `metrics`, `prometheus`, `slo`, `sli`                                                   |
 | `observability`     | `observability-tracing`             | `observability`, `tracing`, `opentelemetry`, `distributed-tracing`, `context-propagation`                |
+| `observability`     | `standardize-logging-messages`      | `logging`, `observability`, `log-messages`, `standardization`, `severity-levels`, `behavior-preserving`  |
 | `performance`       | `performance-benchmarking`          | `performance`, `benchmarking`, `micro-benchmark`, `statistics`, `compiler-optimization`                  |
 | `performance`       | `performance-profiling`             | `performance`, `profiling`, `pprof`, `cpu`, `memory`, `goroutines`                                       |
 | `research`          | `research-analyst`                  | `research`, `fact-checking`, `source-evaluation`, `evidence`, `reporting`                                |
