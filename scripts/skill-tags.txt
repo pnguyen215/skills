@@ -82,3 +82,4 @@ shell-shdoc-engineer: bash, shell, documentation, posix, comments, technical-wri
 skill-optimizer: prompt-engineering, optimization, agent-skills, performance
 documentation-code-deep-dive: code-documentation, inline-comments, code-analysis, comments, mentoring, behavior-preserving
 standardize-logging-messages: logging, observability, log-messages, standardization, severity-levels, behavior-preserving
+golang-examples-writer: golang, examples, sample-code, documentation, library, api-endpoint, runnable
