@@ -2,6 +2,40 @@
 
 All notable changes to this skills repository will be documented in this file.
 
+## [2.0.9] - 2026-11-22
+
+### Added
+
+- Two new skills, bringing the total from 58 to 60:
+  - `golang-examples-writer` (category `language-specific`): generate a compiling,
+    runnable `examples/` folder for a Go library, CLI or service — one program per
+    usage case, written against the public API only. It builds the case inventory
+    from exported symbols, endpoint routes, options and documented error paths,
+    keeps examples inside the project module, and requires `gofmt`,
+    `go build ./examples/...`, `go vet ./examples/...` and an actual run of every
+    example before documenting its output. Writes are confined to the examples
+    directory: bugs or missing exported APIs found on the way are reported, never
+    fixed.
+  - `code-quality-bug-detection` (category `code-quality`): read-only correctness
+    audit for a repository, module, file, class or function. It establishes
+    intended behaviour from docs and tests, hunts boundary, nil-handling,
+    error-handling, concurrency, resource, lifecycle, logic, parsing,
+    API-contract and platform defects, and requires each finding to be traced to a
+    concrete trigger with separate severity and confidence. Source code is never
+    modified or fixed.
+- `prompts/code-bug-detection.md`: phased audit prompt with a findings table and
+  explicit evidence, coverage and limitation rules, matching the new
+  `code-quality-bug-detection` skill.
+- `prompts/code-quality-refactoring.md`: scoped refactoring prompt for removing
+  code smells and applying SOLID principles without changing external behaviour,
+  public contracts or adding features.
+
+### Changed
+
+- Registered `golang-examples-writer` in `scripts/skill-tags.txt` and regenerated
+  the `README.md` skills table, so the new skill is listed with its tags and
+  `make validate` now covers all 60 skills.
+
 ## [2.0.4] - 2026-10-21
 
 ### Added
