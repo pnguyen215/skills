@@ -61,6 +61,7 @@ python-pydoc-engineer: python, docstrings, pep-257, sphinx, documentation
 
 replify-go-api-design: replify, golang, api-design, functional-options, fluent-api
 replify-go-encapsulation: replify, golang, encapsulation, nil-safety, defensive-copy
+replify-response-wrapping: replify, golang, response-wrapping, error-handling, refactoring
 replify-slogger: replify, golang, logging, slog, zero-allocation
 replify-strchain: replify, golang, strings, fluent-api, string-builder
 replify-strutil: replify, golang, strings, validation, transformation
