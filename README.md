@@ -268,6 +268,7 @@ Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded 
 | `api-design`        | `api-design-error-models`           | `api`, `error-handling`, `rfc-7807`, `http-status`, `grpc`                                                                              |
 | `api-design`        | `api-design-rest-grpc-conventions`  | `api`, `rest`, `grpc`, `naming`, `pagination`                                                                                           |
 | `api-design`        | `api-design-versioning`             | `api`, `versioning`, `deprecation`, `backward-compatibility`, `rest`                                                                    |
+| `ci-cd`             | `ci-cd-makefile-generator`          | `makefile`, `build-automation`, `task-runner`, `developer-experience`, `self-documenting`, `conventions`                                |
 | `ci-cd`             | `ci-cd-pipelines`                   | `ci-cd`, `github-actions`, `gitlab-ci`, `matrix-builds`, `caching`                                                                      |
 | `ci-cd`             | `ci-cd-quality-gates`               | `ci-cd`, `quality-gate`, `sonarqube`, `coverage`, `linting`                                                                             |
 | `ci-cd`             | `ci-cd-release-management`          | `ci-cd`, `release`, `semver`, `changelog`, `publishing`                                                                                 |
