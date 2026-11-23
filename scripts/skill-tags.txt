@@ -33,7 +33,7 @@ documentation-collapsible-readme: documentation, readme, markdown, collapsible, 
 documentation-readme-generator: documentation, readme, markdown, onboarding, repository
 documentation-technical-writing: documentation, adr, runbook, rfc, technical-writing
 documentation-changelog-writer: documentation, changelog, release-notes, technical-writing, release-management
-documentation-topic-organizer: documentation, markdown, information-architecture, restructuring, link-integrity, behavior-preserving
+documentation-topic-organizer: documentation, markdown, information-architecture, restructuring, naming-conventions, link-integrity, behavior-preserving
 
 git-workflow-branching: git, branching, trunk-based, gitflow, branch-protection
 git-workflow-commit-conventions: git, conventional-commits, commitlint, changelog, automation
