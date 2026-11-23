@@ -275,6 +275,7 @@ Grouped by `metadata.category` and labelled with `metadata.tags` (both recorded 
 | `code-quality`      | `code-quality-bug-detection`        | `bug-detection`, `defects`, `audit`, `correctness`, `edge-cases`, `race-conditions`                                                     |
 | `code-quality`      | `code-quality-code-review`          | `code-review`, `pull-request`, `architecture`, `security`, `maintainability`                                                            |
 | `code-quality`      | `code-quality-codebase-analyst`     | `codebase-analysis`, `architecture`, `execution-tracing`, `onboarding`, `reverse-engineering`                                           |
+| `code-quality`      | `code-quality-function-renamer`     | `naming`, `refactoring`, `conventions`, `clean-code`, `readability`, `rename`                                                           |
 | `code-quality`      | `code-quality-logic-review-diagram` | `code-review`, `logic-analysis`, `sequence-diagram`, `activity-diagram`, `mermaid`, `architecture`                                      |
 | `code-quality`      | `code-quality-refactoring`          | `refactoring`, `code-smells`, `solid`, `cohesion`, `clean-code`                                                                         |
 | `code-quality`      | `code-quality-static-analysis`      | `static-analysis`, `linting`, `sast`, `complexity`, `code-quality`                                                                      |
