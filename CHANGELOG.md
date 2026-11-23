@@ -2,6 +2,66 @@
 
 All notable changes to this skills repository will be documented in this file.
 
+## [2.0.10] - 2026-11-23
+
+### Added
+
+- Four new skills, bringing the total from 60 to 64:
+  - `replify-response-wrapping` (category `ecosystem-replify`): make every Go
+    function in scope return a `*replify.R` envelope as its last output —
+    whatever the number of existing outputs — carrying status, message, body,
+    error chain and optional pagination metadata. Original outputs are kept,
+    every return path is wrapped (void functions included), call sites and tests
+    are updated, envelopes from callees are propagated instead of rebuilt, and
+    the result is proven with `gofmt`, `go build`, `go vet` and `go test`.
+    Signatures fixed by the language or framework, gRPC/GraphQL/WebSocket
+    handlers and measured hot paths are reported, not changed.
+  - `documentation-topic-organizer` (category `documentation`): reorganize a
+    folder, project or explicit file list into topic groups derived from file
+    content rather than filenames, giving every group and file a clear, short,
+    technical name. Analysis and proposal are read-only; files move only after
+    explicit approval, and content is preserved byte-for-byte except for
+    references broken by the move. `include: docs|all` selects Markdown-only or
+    every file type, pinned paths (root manifests, tooling folders, build-bound
+    source and test paths) are protected, and reference checks cover links,
+    imports, includes, assets and anchors.
+  - `ci-cd-makefile-generator` (category `ci-cd`): create a `Makefile` when none
+    exists, or update the existing one, so every command a developer or CI job
+    runs is reachable through a target and every recipe line has an explanatory
+    comment. The repository's current Makefile is the template; otherwise a
+    standard GNU make 3.81 layout is used. Targets are validated with `make -n`
+    and `make help`, and commands deliberately left out are reported.
+  - `code-quality-function-renamer` (category `code-quality`): rename functions
+    and methods to the idiomatic convention of their language after reading the
+    full body, so the new name describes what the code actually does. Candidates
+    are checked against the project's own linter/style config and validated as
+    clear, short, meaningful and professional; all references — call sites,
+    tests, docs, interface and mock implementations, reflection or string
+    usages — are updated and verified with build, type-check, lint and tests.
+    Public or exported renames are treated as breaking.
+- Four matching prompts: `prompts/replify-wrap-function-output.md`,
+  `prompts/organize-markdown-by-topic.md`, `prompts/makefile-generator.md` and
+  `prompts/rename-function-by-convention.md`, each with `title`, `description`
+  and `tags` frontmatter.
+- `make new-prompt` scaffolds a prompt with the required frontmatter and section
+  skeleton; `make list-skills` and `make list-prompts` list the repository
+  contents.
+
+### Changed
+
+- `Makefile`: every recipe line is now documented by a comment on its own
+  column-0 line, so comments are never echoed by make and never break
+  backslash-continued shell blocks. New targets: `validate-prompts` (requires
+  `title`, `description` and `tags` on every `prompts/*.md`), `check` (runs
+  `validate`, `validate-prompts` and `test`) and `install`, `uninstall`,
+  `upgrade`, `sync-claude` and `sync-opencode` wrappers that forward options via
+  `ARGS="..."`. `test` still syntax-checks every shell script and dry-runs the
+  installer.
+- `README.md`: regenerated the skills table for all 64 skills, adding the four
+  new entries with their tags.
+- `scripts/skill-tags.txt`: registered `documentation-topic-organizer` and
+  `replify-response-wrapping`.
+
 ## [2.0.9] - 2026-11-22
 
 ### Added
